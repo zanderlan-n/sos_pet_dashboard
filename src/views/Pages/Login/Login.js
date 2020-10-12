@@ -25,7 +25,7 @@ import useToast from '../../../hooks/useToast';
 import { validateEmail } from '../../../utils/validations';
 
 import './Login.scss';
-import logo from '../../../assets/img/pet_logo.svg';
+import logo from '../../../assets/img/pet_logo.png';
 
 const LOGIN = gql`
   mutation login($identifier: String!, $password: String!) {
