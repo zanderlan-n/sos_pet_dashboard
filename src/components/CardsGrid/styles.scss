@@ -1,0 +1,29 @@
+.card-wrapper {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  @media only screen and (max-width: 640px) {
+    grid-gap: 0;
+    padding: 24px 0;
+  }
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 1px 1px 0 rgba(60, 75, 100, 0.14),
+    0 2px 1px -1px rgba(60, 75, 100, 0.12), 0 1px 3px 0 rgba(60, 75, 100, 0.2);
+  @media only screen and (max-width: 640px) {
+    margin: 0;
+    border-radius: 0;
+    border-bottom: 1px rgba(48, 60, 84, 0.2) solid;
+  }
+}
+
+.card-img {
+}
+.line {
+  display: flex;
+}
+.label {
+  font-weight: bold;
+}
