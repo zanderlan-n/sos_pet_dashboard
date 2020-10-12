@@ -15,6 +15,7 @@ production:
   script:
     - echo "$ENV_FILE" >> .env
     - echo $ENV_FILE
+
     - dpl --provider=heroku --app=$HEROKU_APP_PRODUCTION --api-key=$HEROKU_API_KEY
   only:
     - master
