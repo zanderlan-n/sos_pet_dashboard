@@ -51,7 +51,9 @@ const Login = () => {
       history.push('/');
     }
   }, [history]);
-
+  const handleRegister = async (e) => {
+    history.push('/register');
+  };
   const handleLogin = async (e) => {
     e.preventDefault();
 
@@ -163,6 +165,14 @@ const Login = () => {
                       type="submit"
                     >
                       Login
+                    </Button>
+                    <Button
+                      onClick={handleRegister}
+                      color="info"
+                      className="px-4 w-100 mt-3  text-white font-weight-bold text-uppercase"
+                      type="submit"
+                    >
+                      Cadastre-se
                     </Button>
                     {errors.auth && (
                       <Alert color="danger" className="mt-2">

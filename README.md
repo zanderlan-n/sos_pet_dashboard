@@ -21,11 +21,11 @@ $ cp .env.local .env
 ### Utilização
 
 ```bash
-# servidor de desenvolvimento com hot reload em http://localhost:2702
-$ npm start
+# servidor de desenvolvimento com hot reload em http://localhost:3004
+$ yarn start
 ```
 
-Navegue para [http://localhost:2702](http://localhost:2702). O app vai reiniciar automaticamente se algum arquivo for alterado.
+Navegue para [http://localhost:3004](http://localhost:3004). O app vai reiniciar automaticamente se algum arquivo for alterado.
 
 ### Build
 

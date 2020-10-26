@@ -9,7 +9,7 @@ const Meetings = () => {
       <Row>
         <Col lg={12}>
           <Card>
-            <CardHeader className="font-weight-bold  text-dark">
+            <CardHeader className="font-weight-bold text-dark">
               Sessões
             </CardHeader>
             <CardBody>
