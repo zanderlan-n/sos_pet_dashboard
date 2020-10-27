@@ -18,7 +18,6 @@ import {
   CardBody,
 } from 'reactstrap';
 
-import { PAGESIZE, filteredSubscriptionStatus } from '../../config/constants';
 import Pagination from '../../components/Pagination';
 import Table from '../../components/Table';
 
@@ -125,89 +124,90 @@ const columns = [
 ];
 
 const Subscriptions = () => {
-  const { id } = useParams();
+  // const { id } = useParams();
 
-  const [activePage, setActivePage] = useState(1);
-  const [totalCount, setTotalCount] = useState(0);
-  const [query, setQuery] = useState('');
+  // const [activePage, setActivePage] = useState(1);
+  // const [totalCount, setTotalCount] = useState(0);
+  // const [query, setQuery] = useState('');
 
-  const setSearch = useRef(
-    _.debounce((value) => {
-      setQuery(value);
-      setActivePage(1);
-    }, 500)
-  ).current;
+  // const setSearch = useRef(
+  //   _.debounce((value) => {
+  //     setQuery(value);
+  //     setActivePage(1);
+  //   }, 500)
+  // ).current;
 
-  const { error, data, loading } = useQuery(FETCH_SUBSCRIPTIONS, {
-    variables: {
-      skip: (activePage - 1) * PAGESIZE,
-      filters: {
-        inStatus: filteredSubscriptionStatus,
-        ...(id && { user: id }),
-      },
-      query,
-    },
-    fetchPolicy: 'no-cache',
-  });
+  // const { error, data, loading } = useQuery(FETCH_SUBSCRIPTIONS, {
+  //   variables: {
+  //     skip: (activePage - 1) * PAGESIZE,
+  //     filters: {
+  //       inStatus: filteredSubscriptionStatus,
+  //       ...(id && { user: id }),
+  //     },
+  //     query,
+  //   },
+  //   fetchPolicy: 'no-cache',
+  // });
 
-  const subscriptions = useMemo(() => {
-    if (error || !data || loading) {
-      return [];
-    }
+  // const subscriptions = useMemo(() => {
+  //   if (error || !data || loading) {
+  //     return [];
+  //   }
 
-    const { totalCount: total, items } = data?.userSubscriptions;
-    setTotalCount(total);
+  //   const { totalCount: total, items } = data?.userSubscriptions;
+  //   setTotalCount(total);
 
-    if (!items) return [];
+  //   if (!items) return [];
 
-    return items.map((item) => ({
-      ...item,
-      createdAt: format(new Date(item.createdAt), 'dd/MM/yyyy hh:mm'),
-      paidAt: item.paidAt
-        ? format(new Date(item.paidAt), 'dd/MM/yyyy HH:mm')
-        : '-',
-    }));
-  }, [error, data, loading]);
+  //   return items.map((item) => ({
+  //     ...item,
+  //     createdAt: format(new Date(item.createdAt), 'dd/MM/yyyy hh:mm'),
+  //     paidAt: item.paidAt
+  //       ? format(new Date(item.paidAt), 'dd/MM/yyyy HH:mm')
+  //       : '-',
+  //   }));
+  // }, [error, data, loading]);
 
-  return (
-    <div className="animated fadeIn">
-      <Card>
-        <CardHeader className="font-weight-bold">Inscrições</CardHeader>
-        <CardBody>
-          <Row>
-            <Col md="3" className="mb-4 pl-0 ml-auto">
-              <InputGroup>
-                <Input
-                  type="text"
-                  id="input1-group2"
-                  name="input1-group2"
-                  placeholder="ID da inscrição, e-mail ou ID do usuário"
-                  onChange={(e) => setSearch(e.target.value)}
-                />
-                <InputGroupAddon addonType="append">
-                  <Button type="button" className="text-white" color="primary">
-                    <i className="fa fa-search" />
-                  </Button>
-                </InputGroupAddon>
-              </InputGroup>
-            </Col>
-          </Row>
-          <Row>
-            <Col lg={12}>
-              <Table data={subscriptions} heads={columns} />
-              <Pagination
-                activePage={activePage}
-                totalPages={totalCount / PAGESIZE}
-                onPageChange={(e) => {
-                  setActivePage(e);
-                }}
-              />
-            </Col>
-          </Row>
-        </CardBody>
-      </Card>
-    </div>
-  );
+  // return (
+  //   <div className="animated fadeIn">
+  //     <Card>
+  //       <CardHeader className="font-weight-bold">Inscrições</CardHeader>
+  //       <CardBody>
+  //         <Row>
+  //           <Col md="3" className="mb-4 pl-0 ml-auto">
+  //             <InputGroup>
+  //               <Input
+  //                 type="text"
+  //                 id="input1-group2"
+  //                 name="input1-group2"
+  //                 placeholder="ID da inscrição, e-mail ou ID do usuário"
+  //                 onChange={(e) => setSearch(e.target.value)}
+  //               />
+  //               <InputGroupAddon addonType="append">
+  //                 <Button type="button" className="text-white" color="primary">
+  //                   <i className="fa fa-search" />
+  //                 </Button>
+  //               </InputGroupAddon>
+  //             </InputGroup>
+  //           </Col>
+  //         </Row>
+  //         <Row>
+  //           <Col lg={12}>
+  //             <Table data={subscriptions} heads={columns} />
+  //             <Pagination
+  //               activePage={activePage}
+  //               totalPages={totalCount / PAGESIZE}
+  //               onPageChange={(e) => {
+  //                 setActivePage(e);
+  //               }}
+  //             />
+  //           </Col>
+  //         </Row>
+  //       </CardBody>
+  //     </Card>
+  //   </div>
+  // );
+  return <div></div>;
 };
 
 StatusBadge.propTypes = {

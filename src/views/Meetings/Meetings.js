@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { Card, CardBody, CardHeader, Col, Row } from 'reactstrap';
-import AnimalsView from '../../components/views/AnimalsView';
+import PetsView from '../../components/views/PetsView';
 
 const Meetings = () => {
   return (
@@ -13,7 +13,7 @@ const Meetings = () => {
               Sessões
             </CardHeader>
             <CardBody>
-              <AnimalsView />
+              <PetsView />
             </CardBody>
           </Card>
         </Col>

@@ -19,8 +19,7 @@ import {
   TabPane,
 } from 'reactstrap';
 
-import UserComments from './Comments';
-import AnimalsView from '../../components/views/AnimalsView';
+import PetsView from '../../components/views/PetsView';
 import Subscriptions from '../Subscriptions/Subscriptions';
 import UserDetails from './Details';
 
@@ -69,12 +68,6 @@ const User = () => {
       onlyMentor: false,
     },
     {
-      type: 'comments',
-      name: 'Comentarios',
-      render: <UserComments />,
-      onlyMentor: true,
-    },
-    {
       type: 'subscriptions',
       name: 'Inscrições',
       render: <Subscriptions />,
@@ -85,7 +78,7 @@ const User = () => {
       name: 'Sessões',
       onlyMentor: false,
       render: (
-        <AnimalsView
+        <PetsView
           setQueryParam={setQueryParam}
           queryParam={queryParam}
           showFilter

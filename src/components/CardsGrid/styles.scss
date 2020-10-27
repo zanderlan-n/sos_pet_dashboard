@@ -1,18 +1,20 @@
 .card-wrapper {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  grid-gap: 20px;
   @media only screen and (max-width: 640px) {
-    grid-gap: 0;
     padding: 24px 0;
   }
 }
 
-.card {
+.inner-card {
+  border-radius: 5px;
   display: flex;
   flex-direction: column;
   box-shadow: 0 1px 1px 0 rgba(60, 75, 100, 0.14),
     0 2px 1px -1px rgba(60, 75, 100, 0.12), 0 1px 3px 0 rgba(60, 75, 100, 0.2);
   @media only screen and (max-width: 640px) {
+    flex-direction: row;
     margin: 0;
     border-radius: 0;
     border-bottom: 1px rgba(48, 60, 84, 0.2) solid;
@@ -20,6 +22,16 @@
 }
 
 .card-img {
+  border-radius: 5px;
+
+  @media only screen and (max-width: 640px) {
+    max-width: 100px;
+    height: 120px;
+    object-fit: cover;
+
+    padding: 0;
+    border-radius: 0;
+  }
 }
 .line {
   display: flex;

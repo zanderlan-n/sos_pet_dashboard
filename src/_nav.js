@@ -11,8 +11,8 @@ const NavMenu = () => {
       },
 
       {
-        name: 'Animais',
-        url: '/animals',
+        name: 'Pets',
+        url: '/pets',
         icon: 'icon-notebook',
       },
       {

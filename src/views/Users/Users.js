@@ -17,7 +17,6 @@ import gql from 'graphql-tag';
 import * as _ from 'lodash';
 import { useHistory } from 'react-router-dom';
 import PaginationComponent from '../../components/Pagination';
-import { PAGESIZE } from '../../config/constants';
 
 const FETCHUSERS = gql`
   query users($filter: String!, $skip: Int) {
@@ -73,7 +72,7 @@ const Users = (props) => {
   const { data, error, loading, refetch } = useQuery(FETCHUSERS, {
     variables: {
       filter,
-      skip: (activePage - 1) * PAGESIZE,
+      skip: activePage - 1,
     },
   });
 
@@ -113,95 +112,7 @@ const Users = (props) => {
     return 'bg-secondary';
   };
 
-  return (
-    <div className="animated fadeIn">
-      <Row>
-        <Col xl={12}>
-          <Card>
-            <CardHeader className="font-weight-bold text-dark d-flex justify-content-between align-items-center">
-              Usuários
-              <Button
-                type="button"
-                onClick={() => history.push('/users/new')}
-                className="text-white"
-                color="primary"
-              >
-                <i className="fa fa-plus" />
-                <span className="font-weight-bold pl-1">Novo</span>
-              </Button>
-            </CardHeader>
-            <CardBody>
-              <Col md="3" className="mb-4 mr-0 pr-0 ml-auto">
-                <InputGroup>
-                  <Input
-                    type="text"
-                    id="searchInput"
-                    name="searchInput"
-                    onChange={(e) => value(e.target.value)}
-                    placeholder="Nome ou Email"
-                  />
-                  <InputGroupAddon addonType="append">
-                    <Button
-                      type="button"
-                      className="text-white"
-                      color="primary"
-                    >
-                      <i className="fa fa-search" />
-                    </Button>
-                  </InputGroupAddon>
-                </InputGroup>
-              </Col>
-              <Table responsive hover striped>
-                <thead>
-                  <tr>
-                    {headers.map((item) => (
-                      <th key={`headers-${item}`} className="w-25" scope="col">
-                        {item}
-                      </th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {users.map((item, i) => {
-                    return (
-                      <tr
-                        className="cursor-pointer"
-                        key={item.id}
-                        onClick={() => {
-                          props.history.push(`/users/${item.id}`);
-                        }}
-                      >
-                        <td className="w-25">{item.name}</td>
-                        <td className="w-25">{item.email}</td>
-                        <td className="w-25">{item.slug}</td>
-                        <td className="w-25 text-right">
-                          {item.badges.map((badge, i) => (
-                            <Badge
-                              key={`${item.id}_${i}`}
-                              className={`mr-2 ${checkBadgesColors(badge)} `}
-                            >
-                              {badge}{' '}
-                            </Badge>
-                          ))}
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </Table>
-              <PaginationComponent
-                activePage={activePage}
-                totalPages={totalCount / PAGESIZE}
-                onPageChange={(e) => {
-                  setActivePage(e);
-                }}
-              />
-            </CardBody>
-          </Card>
-        </Col>
-      </Row>
-    </div>
-  );
+  return <div></div>;
 };
 
 export default Users;
