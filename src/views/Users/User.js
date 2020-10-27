@@ -18,82 +18,43 @@ import {
   TabContent,
   TabPane,
 } from 'reactstrap';
+import useSession from '../../hooks/useSession';
+import loadingView from '../../components/Loading';
 
 import PetsView from '../../components/views/PetsView';
 import Subscriptions from '../Subscriptions/Subscriptions';
 import UserDetails from './Details';
 
 const FETCH_USER = gql`
-  query user($id: String!) {
+  query user($id: ID!) {
     user(id: $id) {
       id
       email
-      profile {
-        name
-        slug
-        isFeatured
-        isMentor
-        isVerified
-      }
-      isDeleted
+      telephone
+      name
     }
   }
 `;
 
 const User = () => {
-  const { id } = useParams();
-  const [queryParam, setQueryParam] = useState(id);
-  const [activeTab, setActiveTab] = useState(0);
-  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const { user } = useSession();
 
   const { data, loading, error, refetch } = useQuery(FETCH_USER, {
-    variables: { id },
+    variables: { id: user.id },
   });
 
-  const user = useMemo(() => {
+  const userData = useMemo(() => {
     if (!data || loading || error) {
       return {};
     }
-
+    delete data?.user?.__typename;
+    console.log('data', data);
     return data?.user;
-  }, [data, loading, error]);
+  }, [data, error, loading]);
 
-  const tabsMeta = [
-    {
-      type: 'details',
-      name: 'Detalhes',
-      render: (
-        <UserDetails user={user} refetch={refetch} loadingUser={loading} />
-      ),
-      onlyMentor: false,
-    },
-    {
-      type: 'subscriptions',
-      name: 'Inscrições',
-      render: <Subscriptions />,
-      onlyMentor: false,
-    },
-    {
-      type: 'meetings',
-      name: 'Sessões',
-      onlyMentor: false,
-      render: (
-        <PetsView
-          setQueryParam={setQueryParam}
-          queryParam={queryParam}
-          showFilter
-        />
-      ),
-    },
-  ];
-
-  const tabs = useMemo(() => {
-    if (!user) return [];
-    return tabsMeta.filter((tab) =>
-      user?.profile?.isMentor ? true : !tab.onlyMentor
-    );
-  }, [tabsMeta, user]);
-
+  if (loading) {
+    return loadingView();
+  }
   return (
     <div className="animated fadeIn">
       <Row>
@@ -101,62 +62,11 @@ const User = () => {
           <Card>
             <CardHeader className="font-weight-bold">Usuário</CardHeader>
             <CardBody>
-              <Nav tabs>
-                {tabs.map((item, i) => (
-                  <NavItem className="d-none d-sm-block" key={i}>
-                    <NavLink
-                      className={`${
-                        i === activeTab
-                          ? `font-weight-bold  text-primary `
-                          : `text-black-80`
-                      }`}
-                      active={i === activeTab}
-                      onClick={() => setActiveTab(i)}
-                    >
-                      {item.name}
-                    </NavLink>
-                  </NavItem>
-                ))}
-                <Dropdown
-                  className="d-sm-none "
-                  nav
-                  isOpen={dropdownOpen}
-                  toggle={() => setDropdownOpen(!dropdownOpen)}
-                >
-                  <DropdownToggle
-                    nav
-                    caret
-                    className="font-weight-bold  text-primary active"
-                  >
-                    {tabs[activeTab].name}
-                  </DropdownToggle>
-                  <DropdownMenu>
-                    {tabs.map((item, i) => (
-                      <DropdownItem
-                        active={i === activeTab}
-                        key={`responsive-dropdown-${i}`}
-                        onClick={() => setActiveTab(i)}
-                      >
-                        {item.name}
-                      </DropdownItem>
-                    ))}
-                  </DropdownMenu>
-                </Dropdown>
-              </Nav>
-              <TabContent activeTab={tabs[activeTab]} id="user-tabs">
-                {tabs.map((item, i) => {
-                  return (
-                    <TabPane
-                      tabId={item}
-                      key={`${i}-tab`}
-                      role="tabpanel"
-                      aria-labelledby={`${item.type}-tab`}
-                    >
-                      {React.cloneElement(item.render)}
-                    </TabPane>
-                  );
-                })}
-              </TabContent>
+              <UserDetails
+                user={userData}
+                refetch={refetch}
+                loadingUser={loading}
+              />
             </CardBody>
           </Card>
         </Col>

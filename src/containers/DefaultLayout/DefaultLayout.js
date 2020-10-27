@@ -74,7 +74,7 @@ const DefaultLayout = ({ history, ...props }) => {
                     />
                   ) : null;
                 })}
-                <Redirect from="/" to="/users" />
+                <Redirect from="/" to="/pets" />
               </Switch>
             </Suspense>
           </Container>

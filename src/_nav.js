@@ -16,8 +16,8 @@ const NavMenu = () => {
         icon: 'icon-notebook',
       },
       {
-        name: 'Contas de Usuário',
-        url: '/users',
+        name: 'Minha Conta',
+        url: '/user',
         icon: 'icon-user',
       },
       {
