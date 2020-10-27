@@ -25,7 +25,7 @@ import useToast from '../../../hooks/useToast';
 import { validateEmail } from '../../../utils/validations';
 
 import './Login.scss';
-import logo from '../../../assets/img/pet_logo.png';
+import logo from '../../../assets/img/pet_logo1.svg';
 
 const LOGIN = gql`
   mutation login($identifier: String!, $password: String!) {
@@ -67,7 +67,6 @@ const Login = () => {
       const { jwt: token } = data.login;
       authManager.set(token);
       const decoded = jwt.decode(token);
-
       startSession(decoded);
 
       handleSuccess();

@@ -3,7 +3,7 @@ import { Button, Nav } from 'reactstrap';
 import PropTypes from 'prop-types';
 
 import { AppNavbarBrand, AppSidebarToggler } from '@coreui/react';
-import logo from '../../assets/img/pet_logo.png';
+import logo from '../../assets/img/pet_logo6.svg';
 import sygnet from '../../assets/img/brand/sygnet.svg';
 
 const propTypes = {
@@ -18,7 +18,7 @@ const DefaultHeader = ({ onLogout }, props) => {
     <>
       <AppSidebarToggler className="d-lg-none" display="md" mobile />
       <AppNavbarBrand
-        full={{ src: logo, width: 110, height: 30, alt: 'SOS Pet Logo' }}
+        full={{ src: logo, width: 142, height: 52, alt: 'SOS Pet Logo' }}
         minimized={{
           src: sygnet,
           width: 35,

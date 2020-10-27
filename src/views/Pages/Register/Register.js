@@ -1,8 +1,7 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useMutation } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
 import { useHistory } from 'react-router-dom';
-import jwt from 'jsonwebtoken';
 import {
   Button,
   Card,
@@ -19,7 +18,6 @@ import {
   Alert,
 } from 'reactstrap';
 
-import { SessionContext } from '../../../context/SessionContext';
 import authManager from '../../../services/auth';
 import useToast from '../../../hooks/useToast';
 import { validateEmail } from '../../../utils/validations';
@@ -51,9 +49,8 @@ const REGISTER = gql`
   }
 `;
 
-const Login = () => {
+const Register = () => {
   const history = useHistory();
-  const { startSession } = useContext(SessionContext);
   const toast = useToast();
 
   const [email, setEmail] = useState('');
@@ -84,7 +81,6 @@ const Login = () => {
       await register({
         variables: { email, password, name, telephone },
       });
-      debugger;
       handleSuccess();
     } catch {
       setErrors({ ...errors, auth: 'Ocorreu uma falha na sua autenticação' });
@@ -229,4 +225,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default Register;
