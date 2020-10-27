@@ -2,6 +2,7 @@ import React from 'react';
 import useSession from './hooks/useSession';
 
 const Pets = React.lazy(() => import('./views/Pets/Pets'));
+const Pet = React.lazy(() => import('./views/Pets/Pet'));
 const User = React.lazy(() => import('./views/Users/User'));
 
 const Meetings = React.lazy(() => import('./views/Meetings/Meetings'));
@@ -14,6 +15,7 @@ const Routes = () => {
   const routes = [
     { path: '/', exact: true, name: 'Home' },
     { path: '/pets', exact: true, name: 'Pets', component: Pets },
+    { path: '/pet/:id', exact: true, name: 'Pet', component: Pet },
 
     { path: '/user', exact: true, name: 'Minha conta', component: User },
     // {

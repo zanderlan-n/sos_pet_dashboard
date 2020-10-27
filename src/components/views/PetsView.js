@@ -3,11 +3,11 @@ import React, { useState, useRef, useMemo } from 'react';
 import * as _ from 'lodash';
 import gql from 'graphql-tag';
 import { useQuery } from '@apollo/react-hooks';
-import { useHistory, useParams } from 'react-router-dom';
 import PT from 'prop-types';
 import { format } from 'date-fns';
 import pt from 'date-fns/locale/pt';
 import { Badge } from 'reactstrap';
+import { useParams, useHistory } from 'react-router-dom';
 import Pagination from '../Pagination';
 import { mappedStatus } from '../../config/constants';
 import loadingView from '../Loading';
@@ -30,13 +30,16 @@ const FETCH_ANIMALS = gql`
 `;
 
 const PetsView = () => {
-  const { id } = useParams();
+  const history = useHistory();
   const { data, error, loading } = useQuery(FETCH_ANIMALS, {
     variables: {
       fetchPolicy: 'no-cache',
     },
   });
 
+  const handleClick = (id) => {
+    history.push(`/pet/${id}`);
+  };
   const animals = useMemo(() => {
     if (!data || loading || error) {
       return [];
@@ -70,12 +73,13 @@ const PetsView = () => {
             </div>
           ),
         },
-
+        action: handleClick,
+        id: item.id,
         image:
           'http://data.biovet.com.br/file/2018/10/29/H104520-F00000-V006-2000x0.jpeg',
       };
     });
-  }, [data, error, loading]);
+  }, [data, error, handleClick, loading]);
 
   // const history = useHistory();
   // const onClick = (idMeeting) => history.push(`/meetings/${idMeeting}`);

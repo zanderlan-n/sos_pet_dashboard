@@ -13,22 +13,12 @@ const NavMenu = () => {
       {
         name: 'Pets',
         url: '/pets',
-        icon: 'icon-notebook',
+        icon: 'fa fa-paw',
       },
       {
         name: 'Minha Conta',
         url: '/user',
         icon: 'icon-user',
-      },
-      {
-        name: 'Sessões',
-        url: '/meetings',
-        icon: 'icon-notebook',
-      },
-      {
-        name: 'Inscrições',
-        url: '/subscriptions',
-        icon: 'fa fa-address-book',
       },
     ],
   };
