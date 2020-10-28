@@ -18,7 +18,7 @@ const DefaultHeader = ({ onLogout }, props) => {
     <>
       <AppSidebarToggler className="d-lg-none" display="md" mobile />
       <AppNavbarBrand
-        full={{ src: logo, width: 142, height: 52, alt: 'SOS Pet Logo' }}
+        full={{ src: logo, width: 130, height: 52, alt: 'SOS Pet Logo' }}
         minimized={{
           src: sygnet,
           width: 35,

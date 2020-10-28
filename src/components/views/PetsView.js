@@ -81,9 +81,6 @@ const PetsView = () => {
     });
   }, [data, error, handleClick, loading]);
 
-  // const history = useHistory();
-  // const onClick = (idMeeting) => history.push(`/meetings/${idMeeting}`);
-
   if (loading) {
     return loadingView();
   }

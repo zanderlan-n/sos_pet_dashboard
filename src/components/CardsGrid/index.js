@@ -3,7 +3,6 @@
 import React from 'react';
 import PT from 'prop-types';
 import './styles.scss';
-import { useHistory } from 'react-router-dom';
 
 const CardsGrid = ({ data }) => {
   return (
@@ -18,7 +17,7 @@ const CardsGrid = ({ data }) => {
               }}
             >
               <img className="card-img" src={item.image} alt="pet_image" />
-              <div>
+              <div className="pb-2">
                 {Object.keys(item.data).map((key) => {
                   return item.data[key];
                 })}
