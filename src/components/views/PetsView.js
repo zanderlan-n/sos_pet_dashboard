@@ -9,7 +9,7 @@ import pt from 'date-fns/locale/pt';
 import { Badge } from 'reactstrap';
 import { useParams, useHistory } from 'react-router-dom';
 import Pagination from '../Pagination';
-import { mappedStatus } from '../../config/constants';
+import { mappedPetStatus } from '../../config/constants';
 import loadingView from '../Loading';
 import CardsGrid from '../CardsGrid';
 
@@ -50,7 +50,7 @@ const PetsView = () => {
           status: (
             <div className="px-2 pt-2">
               <i className="fa fa-bullhorn" />
-              <span className="ml-2">{mappedStatus[item.status]}</span>
+              <span className="ml-2">{mappedPetStatus[item.status]}</span>
             </div>
           ),
 

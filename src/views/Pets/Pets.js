@@ -4,7 +4,7 @@ import { Card, CardBody, CardHeader, Col, Row } from 'reactstrap';
 import PetsView from '../../components/views/PetsView';
 import { useIsMobile } from '../../hooks/useIsMobile';
 
-const Meetings = () => {
+const Pets = () => {
   const isMobile = useIsMobile();
   return (
     <div className="animated fadeIn">
@@ -28,4 +28,4 @@ const Meetings = () => {
   );
 };
 
-export default Meetings;
+export default Pets;

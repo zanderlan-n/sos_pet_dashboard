@@ -18,6 +18,10 @@ body {
   cursor: pointer;
 }
 
+.space-between {
+  justify-content: space-between !important;
+}
+
 .btn-ghost-primary:hover {
   color: white !important;
 }

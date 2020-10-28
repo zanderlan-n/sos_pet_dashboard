@@ -76,7 +76,7 @@ const UserDetails = ({ user, refetch, loadingUser }) => {
   const [recoverPassword] = useMutation(FORGET_PASSWORD);
 
   useEffect(() => {
-    if (_.isEmpty(userInput) && user) {
+    if (_.isEmpty(userInput) && !_.isEmpty(user)) {
       setUserInput({
         ...user,
       });

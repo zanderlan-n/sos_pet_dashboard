@@ -11,7 +11,7 @@ const client = new ApolloClient({
   onError: ({ graphQLErrors, response }) => {
     if (
       graphQLErrors?.length &&
-      graphQLErrors[0]?.extensions?.code === 'UNAUTHENTICATED'
+      graphQLErrors[0]?.message === 'Invalid token.'
     ) {
       authManager.clear();
       response.errors = ['Usuário não autenticado.'];

@@ -17,7 +17,7 @@ const CardsGrid = ({ data }) => {
                 item.action(item.id);
               }}
             >
-              <img className="card-img" src={item.image} alt="image_img" />
+              <img className="card-img" src={item.image} alt="pet_image" />
               <div>
                 {Object.keys(item.data).map((key) => {
                   return item.data[key];

@@ -1,28 +1,11 @@
 import React, { useState, useMemo } from 'react';
 import { useQuery } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
-import { useParams } from 'react-router-dom';
-import {
-  Card,
-  CardBody,
-  CardHeader,
-  Col,
-  Dropdown,
-  DropdownToggle,
-  DropdownMenu,
-  DropdownItem,
-  Row,
-  Nav,
-  NavItem,
-  NavLink,
-  TabContent,
-  TabPane,
-} from 'reactstrap';
+import { Card, CardBody, CardHeader, Col, Row } from 'reactstrap';
 import useSession from '../../hooks/useSession';
 import loadingView from '../../components/Loading';
-
+import useToast from '../../hooks/useToast';
 import PetsView from '../../components/views/PetsView';
-import Subscriptions from '../Subscriptions/Subscriptions';
 import UserDetails from './Details';
 
 const FETCH_USER = gql`
@@ -38,7 +21,7 @@ const FETCH_USER = gql`
 
 const User = () => {
   const { user } = useSession();
-
+  const toast = useToast();
   const { data, loading, error, refetch } = useQuery(FETCH_USER, {
     variables: { id: user.id },
   });
@@ -48,12 +31,14 @@ const User = () => {
       return {};
     }
     delete data?.user?.__typename;
-    console.log('data', data);
     return data?.user;
   }, [data, error, loading]);
 
   if (loading) {
     return loadingView();
+  }
+  if (error) {
+    toast('Não foi possivel buscar as informações do usuário');
   }
   return (
     <div className="animated fadeIn">
@@ -66,6 +51,7 @@ const User = () => {
                 user={userData}
                 refetch={refetch}
                 loadingUser={loading}
+                error={error}
               />
             </CardBody>
           </Card>
