@@ -24,8 +24,7 @@ import authManager from '../../../services/auth';
 import useToast from '../../../hooks/useToast';
 import { validateEmail } from '../../../utils/validations';
 
-import './Login.scss';
-import logo from '../../../assets/img/pet_logo1.svg';
+import './ForgetPassword.scss';
 
 const LOGIN = gql`
   mutation login($identifier: String!, $password: String!) {
@@ -35,14 +34,13 @@ const LOGIN = gql`
   }
 `;
 
-const Login = () => {
+const ForgetPassword = () => {
   const history = useHistory();
   const { startSession } = useContext(SessionContext);
   const toast = useToast();
 
   const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [errors, setErrors] = useState({ email: '', password: '', auth: '' });
+  const [errors, setErrors] = useState({ email: '' });
 
   const [login] = useMutation(LOGIN);
 
@@ -51,17 +49,15 @@ const Login = () => {
       history.push('/');
     }
   }, [history]);
-  const handleRegister = async (e) => {
-    history.push('/register');
-  };
-  const handleLogin = async (e) => {
+
+  const handleSendEmail = async (e) => {
     e.preventDefault();
 
     if (!validateFields()) return;
 
     try {
       const { data } = await login({
-        variables: { identifier: email, password },
+        variables: { identifier: email },
       });
 
       const { jwt: token } = data.login;
@@ -93,21 +89,8 @@ const Login = () => {
       }
     }
 
-    if (!password) {
-      validationErrors.password = 'A senha é obrigatória';
-      result = false;
-    }
-
     setErrors(validationErrors);
     return result;
-  };
-
-  const handlePasswordChange = (e) => {
-    setPassword(e.target.value);
-
-    if (password && errors.password) {
-      setErrors({ ...errors, password: '' });
-    }
   };
 
   const handleEmailBlur = () => {
@@ -117,26 +100,22 @@ const Login = () => {
   };
 
   const handleSuccess = () => {
-    toast('Login efetuado com sucesso');
+    toast('Email de recuperação de senha enviado com sucesso');
     history.push('/');
-  };
-  const handleForgotPassword = () => {
-    history.push('/forget-password');
   };
 
   return (
     <div className="app flex-row align-items-center background">
       <Container>
-        <img id="background-image" src={logo} alt="" />
         <Row className="justify-content-center">
           <Col md="6">
             <CardGroup>
               <Card className="p-4">
                 <CardBody>
                   <Form>
-                    <h1 className="text-center pb-3">Login</h1>
+                    <h1 className="text-center pb-3">Esqueci minha senha</h1>
                     <FormGroup>
-                      <Label htmlFor="email">E-mail</Label>
+                      <Label htmlFor="email">Digite seu e-mail</Label>
                       <Input
                         id="email"
                         type="text"
@@ -148,39 +127,13 @@ const Login = () => {
                       />
                       <FormFeedback invalid>{errors.email}</FormFeedback>
                     </FormGroup>
-                    <FormGroup className="mb-4">
-                      <Label htmlFor="password">Senha</Label>
-                      <Input
-                        id="password"
-                        type="password"
-                        autoComplete="current-password"
-                        value={password}
-                        onChange={handlePasswordChange}
-                        invalid={errors.password}
-                      />
-                      <FormFeedback invalid>{errors.password}</FormFeedback>
-                      <div
-                        className="text-muted cursor-pointer"
-                        onClick={handleForgotPassword}
-                      >
-                        Esqueci minha senha
-                      </div>
-                    </FormGroup>
                     <Button
-                      onClick={handleLogin}
+                      onClick={handleSendEmail}
                       color="primary"
                       className="px-4 w-100 text-white font-weight-bold text-uppercase"
                       type="submit"
                     >
-                      Login
-                    </Button>
-                    <Button
-                      onClick={handleRegister}
-                      color="info"
-                      className="px-4 w-100 mt-3  text-white font-weight-bold text-uppercase"
-                      type="submit"
-                    >
-                      Cadastre-se
+                      Enviar
                     </Button>
                     {errors.auth && (
                       <Alert color="danger" className="mt-2">
@@ -198,4 +151,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default ForgetPassword;

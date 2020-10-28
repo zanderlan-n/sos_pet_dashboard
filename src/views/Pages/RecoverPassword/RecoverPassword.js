@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useMutation } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useParams } from 'react-router-dom';
 import jwt from 'jsonwebtoken';
 import {
   Button,
@@ -22,10 +22,8 @@ import {
 import { SessionContext } from '../../../context/SessionContext';
 import authManager from '../../../services/auth';
 import useToast from '../../../hooks/useToast';
-import { validateEmail } from '../../../utils/validations';
 
-import './Login.scss';
-import logo from '../../../assets/img/pet_logo1.svg';
+import './RecoverPassword.scss';
 
 const LOGIN = gql`
   mutation login($identifier: String!, $password: String!) {
@@ -35,14 +33,14 @@ const LOGIN = gql`
   }
 `;
 
-const Login = () => {
+const RecoverPassword = () => {
   const history = useHistory();
+  const { token: recoverEmailToken } = useParams();
   const { startSession } = useContext(SessionContext);
   const toast = useToast();
 
-  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [errors, setErrors] = useState({ email: '', password: '', auth: '' });
+  const [errors, setErrors] = useState({ password: '' });
 
   const [login] = useMutation(LOGIN);
 
@@ -51,17 +49,15 @@ const Login = () => {
       history.push('/');
     }
   }, [history]);
-  const handleRegister = async (e) => {
-    history.push('/register');
-  };
-  const handleLogin = async (e) => {
+
+  const handleSendEmail = async (e) => {
     e.preventDefault();
 
     if (!validateFields()) return;
 
     try {
       const { data } = await login({
-        variables: { identifier: email, password },
+        variables: { identifier: password },
       });
 
       const { jwt: token } = data.login;
@@ -82,17 +78,6 @@ const Login = () => {
       password: '',
     };
 
-    if (!email) {
-      validationErrors.email = 'O email é obrigatório';
-      result = false;
-    } else {
-      const emailValidation = validateEmail(email);
-      if (emailValidation) {
-        validationErrors.email = 'E-mail inválido';
-        result = false;
-      }
-    }
-
     if (!password) {
       validationErrors.password = 'A senha é obrigatória';
       result = false;
@@ -110,44 +95,24 @@ const Login = () => {
     }
   };
 
-  const handleEmailBlur = () => {
-    if (!errors.email || email) {
-      setErrors({ ...errors, email: validateEmail(email) });
-    }
-  };
-
   const handleSuccess = () => {
-    toast('Login efetuado com sucesso');
+    toast('Email de recuperação de senha enviado com sucesso');
     history.push('/');
   };
-  const handleForgotPassword = () => {
-    history.push('/forget-password');
-  };
 
+  if (!recoverEmailToken) {
+    history.push('/');
+  }
   return (
     <div className="app flex-row align-items-center background">
       <Container>
-        <img id="background-image" src={logo} alt="" />
         <Row className="justify-content-center">
           <Col md="6">
             <CardGroup>
               <Card className="p-4">
                 <CardBody>
                   <Form>
-                    <h1 className="text-center pb-3">Login</h1>
-                    <FormGroup>
-                      <Label htmlFor="email">E-mail</Label>
-                      <Input
-                        id="email"
-                        type="text"
-                        autoComplete="email"
-                        value={email}
-                        onBlur={handleEmailBlur}
-                        onChange={(e) => setEmail(e.target.value)}
-                        invalid={errors.email}
-                      />
-                      <FormFeedback invalid>{errors.email}</FormFeedback>
-                    </FormGroup>
+                    <h1 className="text-center pb-3">Alterar minha senha</h1>
                     <FormGroup className="mb-4">
                       <Label htmlFor="password">Senha</Label>
                       <Input
@@ -159,28 +124,14 @@ const Login = () => {
                         invalid={errors.password}
                       />
                       <FormFeedback invalid>{errors.password}</FormFeedback>
-                      <div
-                        className="text-muted cursor-pointer"
-                        onClick={handleForgotPassword}
-                      >
-                        Esqueci minha senha
-                      </div>
                     </FormGroup>
                     <Button
-                      onClick={handleLogin}
+                      onClick={handleSendEmail}
                       color="primary"
                       className="px-4 w-100 text-white font-weight-bold text-uppercase"
                       type="submit"
                     >
-                      Login
-                    </Button>
-                    <Button
-                      onClick={handleRegister}
-                      color="info"
-                      className="px-4 w-100 mt-3  text-white font-weight-bold text-uppercase"
-                      type="submit"
-                    >
-                      Cadastre-se
+                      Enviar
                     </Button>
                     {errors.auth && (
                       <Alert color="danger" className="mt-2">
@@ -198,4 +149,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default RecoverPassword;

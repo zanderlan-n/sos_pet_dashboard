@@ -23,6 +23,10 @@ const Login = React.lazy(() => import('./views/Pages/Login'));
 const Register = React.lazy(() => import('./views/Pages/Register'));
 const Page404 = React.lazy(() => import('./views/Pages/Page404'));
 const Page500 = React.lazy(() => import('./views/Pages/Page500'));
+const ForgetPassword = React.lazy(() => import('./views/Pages/ForgetPassword'));
+const RecoverPassword = React.lazy(() =>
+  import('./views/Pages/RecoverPassword')
+);
 
 const axios = Axios.create({
   baseURL: 'http://localhost:3000',
@@ -56,6 +60,18 @@ const App = () => {
                 path="/register"
                 name="Register Page"
                 render={(props) => <Register {...props} />}
+              />
+              <Route
+                exact
+                path="/forget-password"
+                name="Forget Password Page"
+                render={(props) => <ForgetPassword {...props} />}
+              />{' '}
+              <Route
+                exact
+                path="/recover-password/:token"
+                name="Recover Password Page"
+                render={(props) => <RecoverPassword {...props} />}
               />
               <Route
                 exact
