@@ -1,21 +1,24 @@
-import React, { useState, useRef, useMemo } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 
 import * as _ from 'lodash';
 import gql from 'graphql-tag';
 import { useQuery } from '@apollo/react-hooks';
-import PT from 'prop-types';
-import { format } from 'date-fns';
-import pt from 'date-fns/locale/pt';
-import { Badge } from 'reactstrap';
-import { useParams, useHistory } from 'react-router-dom';
+import {
+  Dropdown,
+  DropdownItem,
+  DropdownToggle,
+  DropdownMenu,
+  Col,
+} from 'reactstrap';
+import { useHistory } from 'react-router-dom';
 import Pagination from '../Pagination';
 import { mappedPetStatus } from '../../config/constants';
 import loadingView from '../Loading';
 import CardsGrid from '../CardsGrid';
 
 const FETCH_ANIMALS = gql`
-  query animals {
-    animals {
+  query animals($where: JSON) {
+    animals(where: $where) {
       id
       color
       last_seen
@@ -31,15 +34,31 @@ const FETCH_ANIMALS = gql`
 
 const PetsView = () => {
   const history = useHistory();
+  const [actionFilter, setActionFilter] = useState(0);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const actionFilterOptions = [
+    { value: null, label: 'Todos' },
+    { value: 'lost', label: 'Perdidos' },
+    { value: 'found', label: 'Encontrados' },
+    { value: 'forAdoption', label: 'Para Adoção' },
+    { value: '', label: 'Adotados' },
+  ];
+
   const { data, error, loading } = useQuery(FETCH_ANIMALS, {
     variables: {
-      fetchPolicy: 'no-cache',
+      ...(actionFilter && {
+        where: { status: actionFilterOptions[actionFilter].value },
+      }),
     },
+    fetchPolicy: 'no-cache',
   });
+  const handleClick = useCallback(
+    (id) => {
+      history.push(`/pet/${id}`);
+    },
+    [history]
+  );
 
-  const handleClick = (id) => {
-    history.push(`/pet/${id}`);
-  };
   const animals = useMemo(() => {
     if (!data || loading || error) {
       return [];
@@ -86,6 +105,31 @@ const PetsView = () => {
   }
   return (
     <div className="animated fadeIn">
+      <Col className="mf-auto mb-4 px-0 d-flex flex-column flex-sm-row">
+        <Dropdown
+          isOpen={dropdownOpen}
+          toggle={() => setDropdownOpen(!dropdownOpen)}
+        >
+          <DropdownToggle
+            className="font-weight-bold mr-sm-0 w-100 w-sm-0 mb-2 mb-sm-0 px-0"
+            style={{ minWidth: 100 }}
+          >
+            {actionFilterOptions[actionFilter].label}{' '}
+            <i className="fa fa-angle-down ml-auto" />
+          </DropdownToggle>
+          <DropdownMenu className="w-100 w-sm-0">
+            {actionFilterOptions.map((item, i) => (
+              <DropdownItem
+                active={i === actionFilter}
+                key={i}
+                onClick={() => setActionFilter(i)}
+              >
+                {item.label}
+              </DropdownItem>
+            ))}
+          </DropdownMenu>
+        </Dropdown>
+      </Col>
       <CardsGrid data={animals} />
     </div>
   );
