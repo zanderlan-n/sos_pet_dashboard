@@ -3,6 +3,7 @@
 import React from 'react';
 import PT from 'prop-types';
 import './styles.scss';
+import preview from '../../assets/img/preview.gif';
 
 const CardsGrid = ({ data }) => {
   return (
@@ -16,7 +17,12 @@ const CardsGrid = ({ data }) => {
                 item.action(item.id);
               }}
             >
-              <img className="card-img" src={item.image} alt="pet_image" />
+              <img
+                className="card-img"
+                onLoad={preview}
+                src={item.image}
+                alt="pet_image"
+              />
               <div className="pb-2">
                 {Object.keys(item.data).map((key) => {
                   return item.data[key];
