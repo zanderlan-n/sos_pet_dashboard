@@ -1,11 +1,13 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
-import React from 'react';
+import React, { useState } from 'react';
 import PT from 'prop-types';
 import './styles.scss';
 import preview from '../../assets/img/preview.gif';
 
 const CardsGrid = ({ data }) => {
+  const [loaded, setLoaded] = useState(false);
+
   return (
     <>
       <div className="card-wrapper">
@@ -18,9 +20,17 @@ const CardsGrid = ({ data }) => {
               }}
             >
               <img
+                style={{ display: loaded ? 'block' : 'none' }}
                 className="card-img"
-                onLoad={preview}
+                onLoad={() => setLoaded(true)}
                 src={item.image}
+                alt="pet_image"
+              />
+
+              <img
+                className="card-img"
+                style={{ display: !loaded ? 'block' : 'none' }}
+                src={preview}
                 alt="pet_image"
               />
               <div className="pb-2">
