@@ -134,7 +134,27 @@ const Login = () => {
               <Card className="p-4">
                 <CardBody>
                   <Form>
-                    <h1 className="text-center pb-3">Login</h1>
+                    <h2 className="text-center pb-1">
+                      Bem-vindo ao S.O.S. - PET! <br />
+                    </h2>
+                    <h4 className="font-weight-normal text-center mb-1">
+                      Perdeu seu amigo,{' '}
+                      <span className="text-primary text-center pb-3 font-weight-bold">
+                        podemos te ajudar
+                      </span>{' '}
+                    </h4>
+                    <h4 className="font-weight-normal text-center mb-1">
+                      Encontrou um pet perdido,{' '}
+                      <span className="text-primary text-center pb-3 font-weight-bold">
+                        nos informe{' '}
+                      </span>{' '}
+                    </h4>
+                    <h4 className="font-weight-normal text-center mb-3">
+                      Faça a diferença na vida de um pet,{' '}
+                      <span className="text-primary text-center pb-3 font-weight-bold">
+                        adote
+                      </span>
+                    </h4>
                     <FormGroup>
                       <Label htmlFor="email">E-mail</Label>
                       <Input
@@ -177,7 +197,7 @@ const Login = () => {
                     <Button
                       onClick={handleRegister}
                       color="info"
-                      className="px-4 w-100 mt-3  text-white font-weight-bold text-uppercase"
+                      className="px-4 w-100 mt-2  text-white font-weight-bold text-uppercase"
                       type="submit"
                     >
                       Cadastre-se

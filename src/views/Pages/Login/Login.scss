@@ -3,6 +3,7 @@
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
+  height: auto;
 }
 
 .background > div {
@@ -11,8 +12,6 @@
 }
 
 #background-image {
-  // width: 200px;
-  // height: 200px;
   margin: auto;
   padding-bottom: 25px;
 }
