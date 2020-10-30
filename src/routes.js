@@ -11,6 +11,7 @@ const Routes = () => {
     { path: '/', exact: true, name: 'Home' },
     { path: '/pets', exact: true, name: 'Pets', component: Pets },
     { path: '/pet/:id', exact: true, name: 'Pet', component: Pet },
+    { path: '/my_pets', exact: true, name: 'Meus Pets', component: Pets },
 
     { path: '/user', exact: true, name: 'Minha conta', component: User },
   ];

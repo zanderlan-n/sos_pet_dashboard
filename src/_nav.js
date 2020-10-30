@@ -20,6 +20,11 @@ const NavMenu = () => {
         url: '/user',
         icon: 'icon-user',
       },
+      {
+        name: 'Meus Pets',
+        url: '/my_pets',
+        icon: 'icon-user',
+      },
     ],
   };
 

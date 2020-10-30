@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback } from 'react';
+import React, { useState, useMemo, useCallback, useContext } from 'react';
 
 import * as _ from 'lodash';
 import gql from 'graphql-tag';
@@ -11,7 +11,8 @@ import {
   Col,
 } from 'reactstrap';
 import { useHistory } from 'react-router-dom';
-import Pagination from '../Pagination';
+import PT from 'prop-types';
+import { SessionContext } from '../../context/SessionContext';
 import { mappedPetStatus } from '../../config/constants';
 import loadingView from '../Loading';
 import CardsGrid from '../CardsGrid';
@@ -32,7 +33,7 @@ const FETCH_ANIMALS = gql`
   }
 `;
 
-const PetsView = () => {
+const PetsView = ({ isMyPetsView }) => {
   const history = useHistory();
   const [actionFilter, setActionFilter] = useState(0);
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -43,12 +44,17 @@ const PetsView = () => {
     { value: 'forAdoption', label: 'Para Adoção' },
     { value: '', label: 'Adotados' },
   ];
-
+  const { user } = useContext(SessionContext);
   const { data, error, loading } = useQuery(FETCH_ANIMALS, {
     variables: {
-      ...(actionFilter && {
-        where: { status: actionFilterOptions[actionFilter].value },
-      }),
+      where: {
+        ...(isMyPetsView && {
+          user: { id: user.id },
+        }),
+        ...(actionFilter && {
+          status: actionFilterOptions[actionFilter].value,
+        }),
+      },
     },
     fetchPolicy: 'no-cache',
   });
@@ -136,3 +142,10 @@ const PetsView = () => {
 };
 
 export default PetsView;
+PetsView.propTypes = {
+  isMyPetsView: PT.bool,
+};
+
+PetsView.defaultProps = {
+  isMyPetsView: false,
+};

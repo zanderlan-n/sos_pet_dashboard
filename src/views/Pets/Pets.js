@@ -1,10 +1,13 @@
 import React from 'react';
 
 import { Card, CardBody, CardHeader, Col, Row } from 'reactstrap';
+import { useHistory } from 'react-router-dom';
 import PetsView from '../../components/views/PetsView';
 import { useIsMobile } from '../../hooks/useIsMobile';
 
 const Pets = () => {
+  const history = useHistory();
+  const isMyPetsView = history.location.pathname === '/my_pets';
   const isMobile = useIsMobile();
   return (
     <div className="animated fadeIn">
@@ -15,10 +18,10 @@ const Pets = () => {
           ) : (
             <Card>
               <CardHeader className="font-weight-bold  text-dark">
-                Pets
+                {isMyPetsView ? 'Meus Pets' : 'Pets'}
               </CardHeader>
               <CardBody>
-                <PetsView />
+                <PetsView isMyPetsView={isMyPetsView} />
               </CardBody>
             </Card>
           )}
