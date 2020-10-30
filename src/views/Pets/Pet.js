@@ -5,6 +5,7 @@ import _ from 'lodash';
 import { Card, CardBody, CardHeader, Col, Row, Label } from 'reactstrap';
 import gql from 'graphql-tag';
 import useToast from '../../hooks/useToast';
+import Image from '../../components/Image';
 import loadingView from '../../components/Loading';
 import { mappedPetStatus, mappedPetSize } from '../../config/constants';
 import './Pets.scss';
@@ -100,7 +101,7 @@ const Pet = () => {
             <CardBody>
               <Row className="d-flex flex-column flex-sm-row px-3 px-sm-4">
                 <div className="col-12 col-sm-4 px-0 pr-sm-3">
-                  <img className="card-img" src={image} alt="image_img" />
+                  <Image className="card-img" image={image} />
                 </div>
                 <div className="col-12 col-sm-8 px-0 pt-3 pt-sm-0 pl-sm-3 d-flex flex-column space-between">
                   {pet.displayedData.map((item) => item)}

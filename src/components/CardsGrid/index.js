@@ -3,10 +3,11 @@
 import React, { useState } from 'react';
 import PT from 'prop-types';
 import './styles.scss';
-import preview from '../../assets/img/preview.gif';
+import Image from '../Image';
 
 const CardsGrid = ({ data }) => {
   const [loaded, setLoaded] = useState(false);
+  const [error, setError] = useState(false);
 
   return (
     <>
@@ -19,20 +20,7 @@ const CardsGrid = ({ data }) => {
                 item.action(item.id);
               }}
             >
-              <img
-                style={{ display: loaded ? 'block' : 'none' }}
-                className="card-img"
-                onLoad={() => setLoaded(true)}
-                src={item.image}
-                alt="pet_image"
-              />
-
-              <img
-                className="card-img"
-                style={{ display: !loaded ? 'block' : 'none' }}
-                src={preview}
-                alt="pet_image"
-              />
+              <Image image={item.image} />
               <div className="pb-2">
                 {Object.keys(item.data).map((key) => {
                   return item.data[key];

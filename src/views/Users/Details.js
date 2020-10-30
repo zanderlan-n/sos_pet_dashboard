@@ -18,7 +18,6 @@ import {
 } from 'reactstrap';
 
 import useToast from '../../hooks/useToast';
-import SwitchInput from '../../components/Switch';
 
 const UPDATE_USER = gql`
   mutation updateUser($id: ID!, $name: String!, $telephone: String!) {
