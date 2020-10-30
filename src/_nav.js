@@ -13,7 +13,7 @@ const NavMenu = () => {
       {
         name: 'Pets',
         url: '/pets',
-        icon: 'fa fa-paw',
+        icon: 'fa fa-search',
       },
       {
         name: 'Minha Conta',
@@ -23,7 +23,7 @@ const NavMenu = () => {
       {
         name: 'Meus Pets',
         url: '/my_pets',
-        icon: 'icon-user',
+        icon: 'fa fa-paw',
       },
     ],
   };

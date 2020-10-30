@@ -1,6 +1,5 @@
 import React, { useState, useMemo, useCallback, useContext } from 'react';
 
-import * as _ from 'lodash';
 import gql from 'graphql-tag';
 import { useQuery } from '@apollo/react-hooks';
 import {
