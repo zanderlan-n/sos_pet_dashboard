@@ -3,7 +3,7 @@ import ApolloClient, { InMemoryCache } from 'apollo-boost';
 import authManager from '../services/auth';
 
 const API_BASE_URL =
-  process.env.REACT_APP_API_BASE_URL || 'http://localhost:1337';
+  process.env.REACT_APP_API_BASE_URL || 'http://localhost:9999';
 
 const client = new ApolloClient({
   uri: `${API_BASE_URL}/graphql`,
