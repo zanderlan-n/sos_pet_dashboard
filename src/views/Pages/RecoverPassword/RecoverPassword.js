@@ -25,15 +25,16 @@ import useToast from '../../../hooks/useToast';
 
 import './RecoverPassword.scss';
 
-const LOGIN = gql`
-  mutation login($identifier: String!, $password: String!) {
-    login(input: { identifier: $identifier, password: $password }) {
+const RECOVERPASSWORD = gql`
+  mutation resetPassword($password: String!, $passwordConfirmation: String!, $code: String!) {
+    resetPassword(password: $password, passwordConfirmation: $passwordConfirmation, code: $code) {
       jwt
     }
   }
 `;
 
-const RecoverPassword = () => {
+const RecoverPassword = ({match}) => {
+  const code = match.params.token;
   const history = useHistory();
   const { token: recoverEmailToken } = useParams();
   const { startSession } = useContext(SessionContext);
@@ -42,7 +43,7 @@ const RecoverPassword = () => {
   const [password, setPassword] = useState('');
   const [errors, setErrors] = useState({ password: '' });
 
-  const [login] = useMutation(LOGIN);
+  const [recoverPassword] = useMutation(RECOVERPASSWORD);
 
   useEffect(() => {
     if (authManager.get()) {
@@ -56,18 +57,14 @@ const RecoverPassword = () => {
     if (!validateFields()) return;
 
     try {
-      const { data } = await login({
-        variables: { identifier: password },
+      const { data } = await recoverPassword({
+        variables: { password: password, passwordConfirmation: password, code: code },
       });
 
-      const { jwt: token } = data.login;
-      authManager.set(token);
-      const decoded = jwt.decode(token);
-      startSession(decoded);
-
       handleSuccess();
-    } catch {
-      setErrors({ ...errors, auth: 'Ocorreu uma falha na sua autenticação' });
+    } catch(e) {
+      console.error(e);
+      setErrors({ ...errors, auth: 'Ocorreu uma falha na alteração da senha' });
     }
   };
 
@@ -96,7 +93,7 @@ const RecoverPassword = () => {
   };
 
   const handleSuccess = () => {
-    toast('Email de recuperação de senha enviado com sucesso');
+    toast('Senha alterada com sucesso!');
     history.push('/');
   };
 
