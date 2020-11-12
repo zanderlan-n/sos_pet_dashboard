@@ -19,3 +19,7 @@ export const MinutesToHours = (totalMinutes, format = 'short') => {
   }
   return `${formatted.join(' e ')}`;
 };
+
+export const getOnlyNumbers = (value) => {
+  return value ? value.replace(/[^\d]/g, '') : '';
+}
