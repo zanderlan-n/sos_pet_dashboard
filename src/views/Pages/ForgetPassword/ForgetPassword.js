@@ -26,10 +26,10 @@ import { validateEmail } from '../../../utils/validations';
 
 import './ForgetPassword.scss';
 
-const LOGIN = gql`
-  mutation login($identifier: String!, $password: String!) {
-    login(input: { identifier: $identifier, password: $password }) {
-      jwt
+const FORGOTPASSWORD = gql`
+  mutation forgotPassword($email: String!) {
+    forgotPassword(email: $email) {
+      ok
     }
   }
 `;
@@ -42,7 +42,7 @@ const ForgetPassword = () => {
   const [email, setEmail] = useState('');
   const [errors, setErrors] = useState({ email: '' });
 
-  const [login] = useMutation(LOGIN);
+  const [forgotPassword] = useMutation(FORGOTPASSWORD);
 
   useEffect(() => {
     if (authManager.get()) {
@@ -56,18 +56,13 @@ const ForgetPassword = () => {
     if (!validateFields()) return;
 
     try {
-      const { data } = await login({
-        variables: { identifier: email },
+      const { data } = await forgotPassword({
+        variables: { email: email },
       });
-
-      const { jwt: token } = data.login;
-      authManager.set(token);
-      const decoded = jwt.decode(token);
-      startSession(decoded);
 
       handleSuccess();
     } catch {
-      setErrors({ ...errors, auth: 'Ocorreu uma falha na sua autenticação' });
+      setErrors({ ...errors, auth: 'Ocorreu uma falha ao enviar o email de recuperação de senha' });
     }
   };
 
