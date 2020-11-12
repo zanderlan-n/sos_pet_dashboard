@@ -16,6 +16,8 @@ import {
   Alert,
   Spinner,
 } from 'reactstrap';
+import InputMask from 'react-input-mask';
+import { getOnlyNumbers } from '../../utils/parsers';
 
 import useToast from '../../hooks/useToast';
 
@@ -55,9 +57,6 @@ const FORGET_PASSWORD = gql`
 
 const validationSchema = yup.object().shape({
   name: yup.string('O nome deve ser texto').required('O nome é obrigatório'),
-  telephone: yup
-    .number('O telefone deve conter somente números')
-    .required('O telefone é obrigatório'),
 });
 
 const UserDetails = ({ user, refetch, loadingUser }) => {
@@ -150,11 +149,12 @@ const UserDetails = ({ user, refetch, loadingUser }) => {
     }
     try {
       const { name, telephone } = userInput;
+      const clearPhone = getOnlyNumbers(telephone);
       const { data } = await updateUser({
         variables: {
           id: user.id,
           name,
-          telephone,
+          telephone: clearPhone,
         },
       });
       if (data?.errors) {
@@ -210,6 +210,8 @@ const UserDetails = ({ user, refetch, loadingUser }) => {
           Telefone
         </Label>
         <Input
+          tag={InputMask}
+          mask="(99) 99999-9999"
           type="tel"
           id="user-telephone"
           onChange={(e) => handleUserChange('telephone', e.target.value)}

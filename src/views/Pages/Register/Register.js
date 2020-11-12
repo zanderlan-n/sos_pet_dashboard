@@ -17,6 +17,8 @@ import {
   FormFeedback,
   Alert,
 } from 'reactstrap';
+import InputMask from 'react-input-mask';
+import { getOnlyNumbers } from '../../../utils/parsers';
 
 import authManager from '../../../services/auth';
 import useToast from '../../../hooks/useToast';
@@ -76,10 +78,11 @@ const Register = () => {
     e.preventDefault();
 
     if (!validateFields()) return;
+    const clearPhone = getOnlyNumbers(telephone);
 
     try {
       await register({
-        variables: { email, password, name, telephone },
+        variables: { email, password, name, telephone: clearPhone },
       });
       handleSuccess();
     } catch {
@@ -166,6 +169,8 @@ const Register = () => {
                     <FormGroup>
                       <Label htmlFor="tel">Telefone</Label>
                       <Input
+                        tag={InputMask}
+                        mask="(99) 99999-9999"
                         id="telefone"
                         type="tel"
                         autoComplete="tel"
