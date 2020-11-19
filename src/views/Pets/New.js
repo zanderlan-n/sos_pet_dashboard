@@ -1,8 +1,8 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useQuery } from '@apollo/react-hooks';
 import { useParams } from 'react-router-dom';
 import _ from 'lodash';
-import { Card, CardBody, CardHeader, Col, Row, Label, Spinner, Button } from 'reactstrap';
+import { Card, CardBody, CardHeader, Col, Row, Label, Spinner, Button, Input } from 'reactstrap';
 import gql from 'graphql-tag';
 import useToast from '../../hooks/useToast';
 import Image from '../../components/Image';
@@ -29,6 +29,26 @@ const Pet = () => {
   const { id } = useParams();
   const toast = useToast();
 
+  const [animalObject, setAnimalObject] = useState({
+    color: '',
+    last_seen: '',
+    description: '',
+    size: 'small',
+    location: '',
+    status: 'lost',
+    age: ''
+  });
+
+  const handlePetInput = (key, value) => {
+    console.log(key);
+    console.log(value);
+
+    const object = { ...animalObject, [key]: value };
+    setAnimalObject(() => ({ object }))
+
+    console.log(animalObject);
+  }
+
   const { data, loading, error } = useQuery(FETCH_ANIMAL, {
     variables: { id: '5f981aa8fe0f67112c00961a' },
   });
@@ -37,7 +57,11 @@ const Pet = () => {
     if (!data || loading || error) {
       return {};
     }
+
     const { animal } = data;
+
+    setAnimalObject(animal);
+
     delete animal.__typename;
     const displayedData = Object.keys(animal).map((key) => {
       if (!animal[key]) {
@@ -126,26 +150,26 @@ const Pet = () => {
           return (
             <div className="form-group">
               <label >{label ? label : key}</label>
-              <input value={animal[key] ? animal[key] : ''} className="form-control" type="text" />
+              <Input onChange={(e) => handlePetInput(key, e.target.value)} name={animalObject[key]} value={animalObject[key] ? animal[key] : ''} className="form-control" type="text"></Input>
             </div>
           );
         case 'select':
           return (
             <div className="form-group">
               <label >{label ? label : key}</label>
-              <Select defaultValue={animal[key] ? animal[key] : ''} options={options} className={"form-control"}></Select>
+              <Select onChange={(e) => handlePetInput(key, e)} name={animalObject[key]} defaultValue={animalObject[key] ? animalObject[key] : ''} options={options} className={"form-control"}></Select>
             </div>
           );
         case 'date':
           return (
-            <DateField value={animal[key]}></DateField>
+            <DateField label={label ? label : key} onChange={(e) => handlePetInput(key, e)} disabled={false} value={animalObject[key]}></DateField>
           )
         default:
         return (
           <div>
             <div className="form-group">
               <label >{label ? label : key}</label>
-              <input value={animal[key] ? animal[key] : ''} className="form-control" type="text" />
+              <Input onChange={(e) => handlePetInput(key, e.target.value)} name={animalObject[key]} value={animalObject[key] ? animalObject[key] : ''} className="form-control" type="text"></Input><Input value={animal[key] ? animal[key] : ''} className="form-control" type="text"></Input>
             </div>
           </div>
         );
@@ -163,8 +187,12 @@ const Pet = () => {
     toast('Não foi possivel buscar as informações do pet');
   }
 
-  const isLoading = false;
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    console.log(pet.data);
+  }
 
+  const isLoading = false;
 
   const image = 'http://data.biovet.com.br/file/2018/10/29/H104520-F00000-V006-2000x0.jpeg';
 
@@ -203,6 +231,7 @@ const Pet = () => {
                       color="primary"
                       type="submit"
                       disabled={isLoading}
+                      onClick={handleSubmit}
                     >
                       {isLoading ? <Spinner size="sm" /> : 'Salvar'}
                     </Button>

@@ -9,16 +9,16 @@ import './styles.scss';
 registerLocale('pt', pt);
 setDefaultLocale('pt');
 
-const CustomInput = ({ value, onClick, disabled }) => (
+const CustomInput = ({ value, onClick, disabled, label }) => (
   <FormGroup>
-    <Label className="font-weight-bold" htmlFor="date">
-      Data
+    <Label htmlFor="date">
+      { label ? label : 'Data'}
     </Label>
     <Input value={value} onClick={onClick} readOnly={disabled} />
   </FormGroup>
 );
 
-const DateField = ({ value, onChange, disabled, ...props }) => {
+const DateField = ({ value, onChange, disabled, label, ...props }) => {
   const handleChange = useCallback(
     (date) => {
       if (onChange) {
@@ -33,7 +33,7 @@ const DateField = ({ value, onChange, disabled, ...props }) => {
       <DatePicker
         className="w-100"
         style={{ width: '100%' }}
-        customInput={<CustomInput value={value} disabled={disabled} />}
+        customInput={<CustomInput label={label} value={value} disabled={disabled} />}
         selected={value ? new Date(value) : undefined}
         showTimeSelect
         showPopperArrow={false}
