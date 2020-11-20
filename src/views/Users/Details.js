@@ -139,11 +139,12 @@ const UserDetails = ({ user, refetch, loadingUser }) => {
     }
   };
 
-  const onFailure = () => ({});
+  const onFailure = () => {
+    toast('Não foi possivel salvar sua foto. Tente novamente mais tarde');
+  };
+
   const onSuccess = async ({ id }) => {
-    // if (loading) {
-    //   return;
-    // }
+    setLoading(true);
     try {
       const { data } = await updateUserImage({
         variables: {
@@ -155,14 +156,11 @@ const UserDetails = ({ user, refetch, loadingUser }) => {
         throw new Error();
       }
       await refetch();
-      toast('Perfil alterado com sucesso');
+      toast('Imagem alterada com sucesso');
       setLoading(false);
     } catch {
       setLoading(false);
-      setErrors({
-        ...errors,
-        save: 'Ocorreu uma falha na edição do cadastro',
-      });
+      toast('Não foi possivel salvar sua foto. Tente novamente mais tarde');
     }
   };
 

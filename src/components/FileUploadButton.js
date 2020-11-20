@@ -73,7 +73,12 @@ const FileUploadButton = ({ url, onSuccess, onFailure, size }) => {
                 }
                 id="output"
                 alt="user"
-                style={{ maxWidth: '100%', maxHeight: '100%' }}
+                style={{
+                  maxWidth: '100%',
+
+                  borderRadius: '0.8em',
+                  maxHeight: '100%',
+                }}
               />
             </div>
           </label>
