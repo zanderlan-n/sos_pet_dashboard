@@ -15,6 +15,9 @@ const FETCH_USER = gql`
       email
       telephone
       name
+      Image {
+        url
+      }
     }
   }
 `;
