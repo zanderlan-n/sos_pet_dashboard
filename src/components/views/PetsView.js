@@ -59,7 +59,11 @@ const PetsView = ({ isMyPetsView }) => {
   });
   const handleClick = useCallback(
     (id) => {
-      history.push(`/pet/${id}`);
+      if (isMyPetsView) {
+        history.push(`/pet/${id}/edit`);
+      } else {
+        history.push(`/pet/${id}`);
+      }
     },
     [history]
   );

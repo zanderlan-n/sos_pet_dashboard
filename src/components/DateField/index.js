@@ -35,7 +35,7 @@ const DateField = ({ value, onChange, disabled, label, ...props }) => {
         style={{ width: '100%' }}
         customInput={<CustomInput label={label} value={value} disabled={disabled} />}
         selected={value ? new Date(value) : undefined}
-        showTimeSelect
+        showTimeSelect={false}
         showPopperArrow={false}
         inputProps={{
           readOnly: true,
@@ -43,7 +43,7 @@ const DateField = ({ value, onChange, disabled, label, ...props }) => {
         timeFormat="HH:mm"
         timeIntervals={15}
         disabled={disabled}
-        dateFormat="d 'de' MMMM 'de' yyyy 'às' h:mm aa"
+        dateFormat="d 'de' MMMM 'de' yyyy"
         onChange={handleChange}
         {...props}
       />
