@@ -15,6 +15,8 @@ import Image from '../../components/Image';
 import loadingView from '../../components/Loading';
 import DateField from '../../components/DateField';
 
+import FileUploadButton from '../../components/FileUploadButton';
+
 import './Pets.scss';
 
 import * as yup from 'yup';
@@ -31,6 +33,11 @@ const FETCH_ANIMAL = gql`
       location
       last_seen
       description
+      image {
+        id
+        url
+        name
+      }
     }
   }
 `;
@@ -45,6 +52,7 @@ const CREATE_ANIMAL = gql`
     $last_seen: Date!
     $description: String!
     $userId: ID!
+    $imageId: ID
   ) {
     createAnimal(
       input: {
@@ -57,6 +65,7 @@ const CREATE_ANIMAL = gql`
           last_seen: $last_seen
           description: $description
           user: $userId
+          image: [ $imageId ]
         }
       }
     ) {
@@ -81,6 +90,7 @@ const UPDATE_ANIMAL = gql`
     $location: String!
     $last_seen: Date!
     $description: String!
+    $imageId: ID
   ) {
     updateAnimal(
       input: {
@@ -93,6 +103,7 @@ const UPDATE_ANIMAL = gql`
           location: $location
           last_seen: $last_seen
           description: $description
+          image: [ $imageId ]
         }
       }
     ) {
@@ -143,8 +154,6 @@ const Pet = () => {
 
   const history = useHistory();
 
-  const image = 'http://data.biovet.com.br/file/2018/10/29/H104520-F00000-V006-2000x0.jpeg';
-
   const [ errors, setErrors ] = useState({});
 
   const [animalObject, setAnimalObject] = useState({
@@ -153,6 +162,7 @@ const Pet = () => {
     color: '',
     location: '',
     size: 'small',
+    imageId: null,
     status: 'lost',
     description: '',
     last_seen: new Date(),
@@ -172,7 +182,13 @@ const Pet = () => {
       const { animal } = data;
 
       animal.age = animal.age.toString();
+      animal.imageUrl = animal.image.url;
       animal.last_seen = new Date(animal.last_seen);
+
+      if (animal && animal.image && animal.image.length && animal.image.length > 0) {
+        animal.imageId = animal.image[0].id;
+        animal.imageUrl = animal.image[0].url;
+      }
 
       setAnimalObject(animal);
     }
@@ -235,6 +251,7 @@ const Pet = () => {
           size: animalObject.size,
           color: animalObject.color,
           status: animalObject.status,
+          imageId: animalObject.imageId,
           location: animalObject.location,
           age: parseFloat(animalObject.age),
           description: animalObject.description,
@@ -270,6 +287,7 @@ const Pet = () => {
           size: animalObject.size,
           color: animalObject.color,
           status: animalObject.status,
+          imageId: animalObject.imageId,
           location: animalObject.location,
           age: parseFloat(animalObject.age),
           description: animalObject.description,
@@ -297,6 +315,17 @@ const Pet = () => {
     }
   };
 
+  const onImageSuccess = (e) => {
+    setAnimalObject({
+      ...animalObject,
+      imageId: e.id
+    });
+  };
+
+  const onImageFailure = (e) => {
+    toast("Não foi possível salvar a imagem");
+  };
+
   if (loading) {
     return loadingView();
   }
@@ -316,9 +345,12 @@ const Pet = () => {
             <CardBody>
               <Row className="d-flex flex-column flex-sm-row px-3 px-sm-4">
                 <div className="col-12 col-sm-4 px-0 pr-sm-3">
-                  <Image className="card-img" image={image} />
-                  <Button className="ml-auto font-weight-bold text-white mt-2 w-100" color="secondary" type="submit">Alterar</Button>
-                  <Button className="ml-auto font-weight-bold text-white mt-2 w-100" color="danger" type="submit">Remover</Button>
+                  <FileUploadButton
+                    url={animalObject.imageUrl}
+                    onSuccess={onImageSuccess}
+                    onFailure={onImageFailure}
+                    size={"100%"}
+                  />
                 </div>
                 <div className="col-12 col-sm-8 px-0 pt-3 pt-sm-0 pl-sm-3 d-flex flex-column space-between">
                   <div className="form-group">

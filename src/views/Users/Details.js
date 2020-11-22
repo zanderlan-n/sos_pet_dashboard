@@ -83,39 +83,6 @@ const UserDetails = ({ user, refetch, loadingUser }) => {
     }
   }, [user, userInput]);
 
-  const handleForgotPassword = () => {
-    // if (!isConfirmingPasswordForgot) {
-    //   setIsConfirmingPasswordForgot(true);
-    //   setTimeout(() => setIsConfirmingPasswordForgot(false), 4000);
-    // } else {
-    //   doResetPassword();
-    // }
-  };
-
-  // const doResetPassword = async () => {
-  //   setIsConfirmingPasswordForgot(false);
-
-  //   try {
-  //     const { data } = await recoverPassword({
-  //       variables: {
-  //         email: user.email,
-  //         origin: process.env.REACT_APP_FRONTEND_URL,
-  //       },
-  //     });
-
-  //     if (!data?.forgetPassword.success) {
-  //       throw new Error();
-  //     }
-
-  //     toast('Email enviado com sucesso!');
-  //   } catch {
-  //     setErrors({
-  //       ...errors,
-  //       save: 'O email de recuperação de senha não pôde ser enviado',
-  //     });
-  //   }
-  // };
-
   const handleUserChange = (field, value) => {
     setUserInput({
       ...userInput,
@@ -210,7 +177,7 @@ const UserDetails = ({ user, refetch, loadingUser }) => {
           onSuccess={onSuccess}
           onFailure={onFailure}
           url={user.Image?.url}
-          size={20}
+          size={"20em"}
         />
         <div className="w-100 ml-3">
           <FormGroup>

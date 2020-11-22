@@ -17,6 +17,10 @@ import { mappedPetStatus } from '../../config/constants';
 import loadingView from '../Loading';
 import CardsGrid from '../CardsGrid';
 
+import * as defaultPetImage from '../../assets/img/icon-pet.png';
+
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:1337';
+
 const FETCH_ANIMALS = gql`
   query animals($where: JSON) {
     animals(where: $where) {
@@ -29,6 +33,11 @@ const FETCH_ANIMALS = gql`
       type
       status
       age
+      image {
+        id
+        url
+        name
+      }
     }
   }
 `;
@@ -102,10 +111,9 @@ const PetsView = ({ isMyPetsView }) => {
             </div>
           ),
         },
-        action: handleClick,
         id: item.id,
-        image:
-          'http://data.biovet.com.br/file/2018/10/29/H104520-F00000-V006-2000x0.jpeg',
+        action: handleClick,
+        image: item && item.image && item.image.length && item.image.length > 0 ? API_BASE_URL + item.image[0].url : defaultPetImage,
       };
     });
   }, [data, error, handleClick, loading]);
@@ -145,7 +153,7 @@ const PetsView = ({ isMyPetsView }) => {
           </DropdownMenu>
         </Dropdown>
         <Col>
-          <Button style={{ color: "#fff" }} onClick={handleNewPet} color={"primary"}>Cadastrar Pet</Button>
+          { isMyPetsView ? <Button style={{ color: "#fff" }} onClick={handleNewPet} color={"primary"}>Cadastrar Pet</Button> : '' }
         </Col>
       </Col>
       <CardsGrid data={animals} />
