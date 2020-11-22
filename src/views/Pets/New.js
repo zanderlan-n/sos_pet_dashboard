@@ -11,7 +11,6 @@ import useSession from '../../hooks/useSession';
 
 import { Select } from 'antd';
 
-import Image from '../../components/Image';
 import loadingView from '../../components/Loading';
 import DateField from '../../components/DateField';
 
@@ -20,7 +19,10 @@ import FileUploadButton from '../../components/FileUploadButton';
 import './Pets.scss';
 
 import * as yup from 'yup';
+import swal from 'sweetalert';
 import * as moment from 'moment';
+
+
 
 const FETCH_ANIMAL = gql`
   query animal($id: ID!) {
@@ -114,6 +116,22 @@ const UPDATE_ANIMAL = gql`
   }
 `;
 
+const DELETE_ANIMAL = gql`
+  mutation deleteAnimal(
+    $id: ID!
+  ) {
+    deleteAnimal(
+      input: {
+        where: { id: $id }
+      }
+    ) {
+      animal {
+        id
+      }
+    }
+  }
+`;
+
 const validationSchema = yup.object().shape({
   color: yup
     .string('A cor deve ser texto')
@@ -144,6 +162,8 @@ const validationSchema = yup.object().shape({
 });
 
 let isLoading = false;
+let isDeleteLoading = false;
+
 let isSubmittedPet = false;
 
 const Pet = () => {
@@ -176,6 +196,7 @@ const Pet = () => {
 
   const [ create ] = useMutation(CREATE_ANIMAL);
   const [ update ] = useMutation(UPDATE_ANIMAL);
+  const [ remove ] = useMutation(DELETE_ANIMAL);
 
   useEffect(() => {
     if (data) {
@@ -239,6 +260,11 @@ const Pet = () => {
       if (!validation) return;
       id ? updateAnimal() : createAnimal();
     });
+  };
+
+  const handleOnDelete = (e) => {
+    e.preventDefault();
+    deleteAnimal();
   };
 
   const createAnimal = async() => {
@@ -311,8 +337,41 @@ const Pet = () => {
         save: msg,
       });
 
-      console.log(error);
+      console.error(error);
     }
+  };
+
+  const deleteAnimal = () => {
+    swal({
+      title: "Deseja excluir este pet?",
+      text: "A exclusão não pode ser desfeita",
+      icon: "warning",
+      buttons: {
+        cancel: "Não",
+        confirm: "Sim"
+      },
+      dangerMode: true,
+
+    }).then(async (willDelete) => {
+      if (!willDelete) { return; }
+
+      isDeleteLoading = true;
+
+      try {
+        const { data } = await remove({
+          variables: {
+            id: animalObject.id
+          },
+        });
+
+        isDeleteLoading = false;
+        toast("Pet excluído com sucesso!");
+        history.push("/my_pets");
+      } catch (err) {
+        isDeleteLoading = false;
+        toast("Ocorreu uma falha ao realizar a exclusão");
+      }
+    });
   };
 
   const onImageSuccess = (e) => {
@@ -350,6 +409,7 @@ const Pet = () => {
                     onSuccess={onImageSuccess}
                     onFailure={onImageFailure}
                     size={"100%"}
+                    isPetImage={true}
                   />
                 </div>
                 <div className="col-12 col-sm-8 px-0 pt-3 pt-sm-0 pl-sm-3 d-flex flex-column space-between">
@@ -387,6 +447,7 @@ const Pet = () => {
                     <FormFeedback>{errors?.age}</FormFeedback>
                   </div>
                   <Col lg="3" md="4" sm="12" className="d-flex pr-0 pl-0 ml-auto">
+                    { id  ? <Button onClick={handleOnDelete} style={{ marginRight: "10px" }} className="ml-auto font-weight-bold text-white mt-md-5 mt-2 w-100" color="danger" type="button" disabled={isDeleteLoading}>{isDeleteLoading ? <Spinner size="sm" /> : 'Excluir'}</Button> : '' }
                     <Button onClick={handleOnSubmit} className="ml-auto font-weight-bold text-white mt-md-5 mt-2 w-100" color="primary" type="submit" disabled={isLoading}>{isLoading ? <Spinner size="sm" /> : 'Salvar'}</Button>
                   </Col>
                 </div>

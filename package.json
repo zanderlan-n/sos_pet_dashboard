@@ -50,6 +50,7 @@
     "reactstrap": "^8.0.0",
     "simple-line-icons": "^2.4.1",
     "styled-components": "^5.0.1",
+    "sweetalert": "^2.1.2",
     "yup": "^0.29.1"
   },
   "devDependencies": {
