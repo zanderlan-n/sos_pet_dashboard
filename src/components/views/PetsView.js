@@ -8,6 +8,7 @@ import {
   DropdownToggle,
   DropdownMenu,
   Col,
+  Button,
 } from 'reactstrap';
 import { useHistory } from 'react-router-dom';
 import PT from 'prop-types';
@@ -112,6 +113,11 @@ const PetsView = ({ isMyPetsView }) => {
   if (loading) {
     return loadingView();
   }
+
+  const handleNewPet = () => {
+    history.push("/pet/new");
+  };
+
   return (
     <div className="animated fadeIn">
       <Col className="mf-auto mb-4 px-0 d-flex flex-column flex-sm-row">
@@ -138,6 +144,9 @@ const PetsView = ({ isMyPetsView }) => {
             ))}
           </DropdownMenu>
         </Dropdown>
+        <Col>
+          <Button style={{ color: "#fff" }} onClick={handleNewPet} color={"primary"}>Cadastrar Pet</Button>
+        </Col>
       </Col>
       <CardsGrid data={animals} />
     </div>

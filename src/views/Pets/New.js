@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useHistory } from 'react-router-dom';
 import { useMutation, useQuery } from '@apollo/react-hooks';
-import { Card, CardBody, CardHeader, Col, Row, Label, Spinner, Button, Input } from 'reactstrap';
+import { Card, CardBody, CardHeader, Col, Row, Label, Spinner, Button, Input, FormFeedback } from 'reactstrap';
 
 import gql from 'graphql-tag';
 
@@ -17,8 +17,8 @@ import DateField from '../../components/DateField';
 
 import './Pets.scss';
 
+import * as yup from 'yup';
 import * as moment from 'moment';
-import _ from 'lodash';
 
 const FETCH_ANIMAL = gql`
   query animal($id: ID!) {
@@ -103,6 +103,38 @@ const UPDATE_ANIMAL = gql`
   }
 `;
 
+const validationSchema = yup.object().shape({
+  color: yup
+    .string('A cor deve ser texto')
+    .max(20, 'O nome deve ter no máximo 20 caracteres')
+    .required('A cor é obrigatória'),
+  last_seen: yup
+    .date('A última vez vista deve ser data')
+    .required('A última vez vista é obrigatória'),
+  description: yup
+    .string('A descrição deve ser texto')
+    .max(200, 'A descrição deve ter no máximo 200 caracteres')
+    .required('A descrição é obrigatória'),
+  size: yup
+    .string('O tamanho deve ser texto')
+    .required('O tamanho é obrigatório'),
+  location: yup
+    .string('A localização deve ser texto')
+    .max(200, 'A localização deve ter no máximo 200 caracteres')
+    .required('A localização é obrigatória'),
+  status: yup
+    .string('A situação deve ser texto')
+    .required('A situação é obrigatória'),
+  age: yup
+    .string('A idade deve ser string')
+    .max(3, 'A localização deve ter no máximo 3 caracteres')
+    .required('A idade é obrigatória'),
+
+});
+
+let isLoading = false;
+let isSubmittedPet = false;
+
 const Pet = () => {
   const { id } = useParams();
   const toast = useToast();
@@ -111,18 +143,19 @@ const Pet = () => {
 
   const history = useHistory();
 
-  const isLoading = false;
   const image = 'http://data.biovet.com.br/file/2018/10/29/H104520-F00000-V006-2000x0.jpeg';
+
+  const [ errors, setErrors ] = useState({});
 
   const [animalObject, setAnimalObject] = useState({
     id: null,
     age: '',
     color: '',
     location: '',
-    last_seen: '',
     size: 'small',
     status: 'lost',
     description: '',
+    last_seen: new Date(),
   });
 
   const { data, loading, error } = useQuery(FETCH_ANIMAL, {
@@ -138,33 +171,63 @@ const Pet = () => {
     if (data) {
       const { animal } = data;
 
-      console.log(animal);
+      animal.age = animal.age.toString();
+      animal.last_seen = new Date(animal.last_seen);
 
       setAnimalObject(animal);
     }
   }, [data]);
 
-  if (loading) {
-    return loadingView();
-  }
+  const validateFields = async () => {
+    try {
+      await validationSchema.validate(animalObject, {
+        abortEarly: false,
+        strict: true,
+      });
+      setErrors({});
+      return true;
+    } catch (valErrors) {
+      const newErrors = valErrors.inner.reduce((obj, { message, path }) => {
+        obj[path] = message;
+        return obj;
+      }, {});
 
-  if (error) {
-    toast('Não foi possível buscar as informações do pet');
-  }
+      setErrors(newErrors);
+      return false;
+    }
+  };
+
+  useEffect(() => {
+    if (!id && isSubmittedPet) {
+      validateFields().then();
+    }
+
+    if (id) {
+      validateFields().then();
+    }
+  }, [animalObject]);
 
   const handleOnChange = (key, value) => {
     setAnimalObject({
       ...animalObject,
       [key]: value
     });
-  }
+  };
 
   const handleOnSubmit = (e) => {
     e.preventDefault();
-    id ? updateAnimal() : createAnimal();
+
+    isSubmittedPet = true;
+
+    validateFields().then((validation) => {
+      if (!validation) return;
+      id ? updateAnimal() : createAnimal();
+    });
   };
 
   const createAnimal = async() => {
+    isLoading = true;
+
     try {
       const { data } = await create({
         variables: {
@@ -179,14 +242,27 @@ const Pet = () => {
         },
       });
 
+      isLoading = false;
       toast("Pet cadastrado com sucesso!");
       history.push("/my_pets");
-    } catch (e) {
-      toast("Não foi possível cadastrar o pet");
+    } catch (err) {
+      isLoading = false;
+
+      const msg =
+        err?.message?.search('GraphQL error: ') > -1
+          ? err?.message?.replace('GraphQL error: ', '')
+          : 'Ocorreu uma falha ao realizar o cadastro';
+
+      setErrors({
+        ...errors,
+        save: msg,
+      });
     }
   };
 
   const updateAnimal = async() => {
+    isLoading = true;
+
     try {
       const { data } = await update({
         variables: {
@@ -201,12 +277,33 @@ const Pet = () => {
         },
       });
 
+      isLoading = false;
       toast("Pet atualizado com sucesso!");
       history.push("/my_pets");
-    } catch (e) {
-      toast("Não foi possível atualizar o pet");
+    } catch (err) {
+      isLoading = false;
+
+      const msg =
+        err?.message?.search('GraphQL error: ') > -1
+          ? err?.message?.replace('GraphQL error: ', '')
+          : 'Ocorreu uma falha ao realizar a atualização';
+
+      setErrors({
+        ...errors,
+        save: msg,
+      });
+
+      console.log(error);
     }
   };
+
+  if (loading) {
+    return loadingView();
+  }
+
+  if (error) {
+    toast('Não foi possível buscar as informações do pet');
+  }
 
   return (
     <div className="animated fadeIn">
@@ -226,30 +323,36 @@ const Pet = () => {
                 <div className="col-12 col-sm-8 px-0 pt-3 pt-sm-0 pl-sm-3 d-flex flex-column space-between">
                   <div className="form-group">
                     <Label>Cor</Label>
-                    <Input value={animalObject.color} onChange={(e) => handleOnChange("color", e.target.value)} className="form-control" type="text"></Input>
+                    <Input id={"color"} value={animalObject.color} onChange={(e) => handleOnChange("color", e.target.value)} spellCheck={false} invalid={!!errors?.color} className="form-control" type="text"></Input>
+                    <FormFeedback>{errors?.color}</FormFeedback>
                   </div>
                   <div className="form-group">
-                    <DateField value={animalObject.last_seen} onChange={(e) => handleOnChange("last_seen", e)} label={"Última vez visto"} className="form-control" type="text"></DateField>
+                    <DateField id={"last_seen"} value={animalObject.last_seen} onChange={(e) => handleOnChange("last_seen", e)} label={"Última vez visto"} invalid={!!errors?.last_seen} error={errors?.last_seen} className="form-control" type="text"></DateField>
                   </div>
                   <div className="form-group">
                     <Label>Descrição</Label>
-                    <Input value={animalObject.description} onChange={(e) => handleOnChange("description", e.target.value)} className="form-control" type="text"></Input>
+                    <Input id={"description"} value={animalObject.description} onChange={(e) => handleOnChange("description", e.target.value)} spellCheck={false} invalid={!!errors?.description} className="form-control" type="text"></Input>
+                    <FormFeedback>{errors?.description}</FormFeedback>
                   </div>
                   <div className={"form-group"}>
                     <Label>Tamanho</Label>
-                    <Select value={animalObject.size} onChange={(e) => handleOnChange("size", e)} className={"form-control"} options={[{ label: 'Pequeno', value: 'small' }, { label: 'Médio', value: 'medium' }, { label: 'Grande', value: 'big' }]}></Select>
+                    <Select id={"size"} value={animalObject.size} onChange={(e) => handleOnChange("size", e)} className={"form-control"} options={[{ label: 'Pequeno', value: 'small' }, { label: 'Médio', value: 'medium' }, { label: 'Grande', value: 'big' }]}></Select>
+                    <FormFeedback>{errors?.size}</FormFeedback>
                   </div>
                   <div className="form-group">
                     <Label>Localização</Label>
-                    <Input value={animalObject.location} onChange={(e) => handleOnChange("location", e.target.value)} className="form-control" type="text"></Input>
+                    <Input id={"location"} value={animalObject.location} onChange={(e) => handleOnChange("location", e.target.value)} spellCheck={false} invalid={!!errors?.location} className="form-control" type="text"></Input>
+                    <FormFeedback>{errors?.location}</FormFeedback>
                   </div>
                   <div className={"form-group"}>
                     <Label>Situação</Label>
-                    <Select value={animalObject.status} onChange={(e) => handleOnChange("status", e)} className={"form-control"} className={"form-control"} options={[{ label: 'Perdido', value: 'lost' }, { label: 'Encontrado', value: 'found' }, { label: 'Para adoção', value: 'forAdoption' }, { label: 'Adotado', value: 'adopted' }]}></Select>
+                    <Select id={"status"} value={animalObject.status} onChange={(e) => handleOnChange("status", e)} className={"form-control"} className={"form-control"} options={[{ label: 'Perdido', value: 'lost' }, { label: 'Encontrado', value: 'found' }, { label: 'Para adoção', value: 'forAdoption' }, { label: 'Adotado', value: 'adopted' }]}></Select>
+                    <FormFeedback>{errors?.status}</FormFeedback>
                   </div>
                   <div className="form-group">
                     <label>Idade</label>
-                    <Input value={animalObject.age} onChange={(e) => handleOnChange("age", e.target.value)} className="form-control" type="text"></Input>
+                    <Input id={"age"} value={animalObject.age} onChange={(e) => handleOnChange("age", e.target.value)} spellCheck={false} invalid={!!errors?.age} className="form-control" type="text"></Input>
+                    <FormFeedback>{errors?.age}</FormFeedback>
                   </div>
                   <Col lg="3" md="4" sm="12" className="d-flex pr-0 pl-0 ml-auto">
                     <Button onClick={handleOnSubmit} className="ml-auto font-weight-bold text-white mt-md-5 mt-2 w-100" color="primary" type="submit" disabled={isLoading}>{isLoading ? <Spinner size="sm" /> : 'Salvar'}</Button>

@@ -3,22 +3,23 @@ import DatePicker, { registerLocale, setDefaultLocale } from 'react-datepicker';
 import pt from 'date-fns/locale/pt';
 import PT from 'prop-types';
 import 'react-datepicker/dist/react-datepicker.css';
-import { Input, FormGroup, Label } from 'reactstrap';
+import { Input, FormGroup, Label, FormFeedback } from 'reactstrap';
 import './styles.scss';
 
 registerLocale('pt', pt);
 setDefaultLocale('pt');
 
-const CustomInput = ({ value, onClick, disabled, label }) => (
+const CustomInput = ({ value, onClick, disabled, label, id, invalid, error }) => (
   <FormGroup>
     <Label htmlFor="date">
       { label ? label : 'Data'}
     </Label>
-    <Input value={value} onClick={onClick} readOnly={disabled} />
+    <Input invalid={invalid} id={id} value={value} onClick={onClick} readOnly={disabled} />
+    <FormFeedback>{error}</FormFeedback>
   </FormGroup>
 );
 
-const DateField = ({ value, onChange, disabled, label, ...props }) => {
+const DateField = ({ value, onChange, disabled, label, id, invalid, error, ...props }) => {
   const handleChange = useCallback(
     (date) => {
       if (onChange) {
@@ -33,7 +34,7 @@ const DateField = ({ value, onChange, disabled, label, ...props }) => {
       <DatePicker
         className="w-100"
         style={{ width: '100%' }}
-        customInput={<CustomInput label={label} value={value} disabled={disabled} />}
+        customInput={<CustomInput error={error} id={id} label={label} value={value} disabled={disabled} invalid={invalid} />}
         selected={value ? new Date(value) : undefined}
         showTimeSelect={false}
         showPopperArrow={false}
