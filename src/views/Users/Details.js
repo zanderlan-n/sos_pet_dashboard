@@ -2,7 +2,6 @@ import React, { useState, useEffect, useMemo } from 'react';
 import * as yup from 'yup';
 import PT from 'prop-types';
 import { useMutation } from '@apollo/react-hooks';
-import { useHistory } from 'react-router-dom';
 import gql from 'graphql-tag';
 import _ from 'lodash';
 import {
@@ -19,7 +18,22 @@ import {
 import InputMask from 'react-input-mask';
 import { getOnlyNumbers } from '../../utils/parsers';
 
+import FileUploadButton from '../../components/FileUploadButton';
 import useToast from '../../hooks/useToast';
+
+const UPDATE_USER_IMAGE = gql`
+  mutation updateUser($id: ID!, $Image: ID!) {
+    updateUser(input: { where: { id: $id }, data: { Image: $Image } }) {
+      user {
+        Image {
+          id
+          previewUrl
+          url
+        }
+      }
+    }
+  }
+`;
 
 const UPDATE_USER = gql`
   mutation updateUser($id: ID!, $name: String!, $telephone: String!) {
@@ -33,15 +47,6 @@ const UPDATE_USER = gql`
         name
         telephone
       }
-    }
-  }
-`;
-
-const DELETE_USER = gql`
-  mutation deleteUser($id: String!) {
-    deleteUser(id: $id) {
-      success
-      error
     }
   }
 `;
@@ -60,16 +65,13 @@ const validationSchema = yup.object().shape({
 });
 
 const UserDetails = ({ user, refetch, loadingUser }) => {
-  const [isConfirmingDeletion, setIsConfirmingDeletion] = useState(false);
-  const [isConfirmingPasswordForgot, setIsConfirmingPasswordForgot] = useState(
-    false
-  );
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
   const [userInput, setUserInput] = useState({});
 
   const toast = useToast();
 
+  const [updateUserImage] = useMutation(UPDATE_USER_IMAGE);
   const [updateUser] = useMutation(UPDATE_USER);
   const [recoverPassword] = useMutation(FORGET_PASSWORD);
 
@@ -137,6 +139,31 @@ const UserDetails = ({ user, refetch, loadingUser }) => {
     }
   };
 
+  const onFailure = () => {
+    toast('Não foi possivel salvar sua foto. Tente novamente mais tarde');
+  };
+
+  const onSuccess = async ({ id }) => {
+    setLoading(true);
+    try {
+      const { data } = await updateUserImage({
+        variables: {
+          id: user.id,
+          Image: id,
+        },
+      });
+      if (data?.errors) {
+        throw new Error();
+      }
+      await refetch();
+      toast('Imagem alterada com sucesso');
+      setLoading(false);
+    } catch {
+      setLoading(false);
+      toast('Não foi possivel salvar sua foto. Tente novamente mais tarde');
+    }
+  };
+
   const handleSave = async () => {
     if (loading) {
       return;
@@ -178,48 +205,58 @@ const UserDetails = ({ user, refetch, loadingUser }) => {
 
   return (
     <>
-      <FormGroup>
-        <Label className="font-weight-bold" htmlFor="name">
-          Nome
-        </Label>
-        <Input
-          type="text"
-          id="name"
-          value={userInput.name || ''}
-          onChange={(e) => handleUserChange('name', e.target.value)}
-          spellCheck={false}
-          invalid={errors?.name}
-          readOnly={isLoading}
+      <div className="d-flex">
+        <FileUploadButton
+          onSuccess={onSuccess}
+          onFailure={onFailure}
+          url={user.Image?.url}
+          size={20}
         />
-        <FormFeedback>{errors?.name}</FormFeedback>
-      </FormGroup>
-      <FormGroup>
-        <Label className="font-weight-bold" htmlFor="email">
-          E-mail
-        </Label>
-        <Input
-          type="text"
-          id="email"
-          spellCheck={false}
-          value={userInput?.email || ''}
-          readOnly
-        />
-      </FormGroup>
-      <FormGroup>
-        <Label className="font-weight-bold" htmlFor="user-id">
-          Telefone
-        </Label>
-        <Input
-          tag={InputMask}
-          mask="(99) 99999-9999"
-          type="tel"
-          id="user-telephone"
-          onChange={(e) => handleUserChange('telephone', e.target.value)}
-          value={userInput.telephone || ''}
-          spellCheck={false}
-          readOnly={isLoading}
-        />
-      </FormGroup>
+        <div className="w-100 ml-3">
+          <FormGroup>
+            <Label className="font-weight-bold" htmlFor="name">
+              Nome
+            </Label>
+            <Input
+              type="text"
+              id="name"
+              value={userInput.name || ''}
+              onChange={(e) => handleUserChange('name', e.target.value)}
+              spellCheck={false}
+              invalid={errors?.name}
+              readOnly={isLoading}
+            />
+            <FormFeedback>{errors?.name}</FormFeedback>
+          </FormGroup>
+          <FormGroup>
+            <Label className="font-weight-bold" htmlFor="email">
+              E-mail
+            </Label>
+            <Input
+              type="text"
+              id="email"
+              spellCheck={false}
+              value={userInput?.email || ''}
+              readOnly
+            />
+          </FormGroup>
+          <FormGroup>
+            <Label className="font-weight-bold" htmlFor="user-id">
+              Telefone
+            </Label>
+            <Input
+              tag={InputMask}
+              mask="(99) 99999-9999"
+              type="tel"
+              id="user-telephone"
+              onChange={(e) => handleUserChange('telephone', e.target.value)}
+              value={userInput.telephone || ''}
+              spellCheck={false}
+              readOnly={isLoading}
+            />
+          </FormGroup>
+        </div>
+      </div>
       {errors.save && (
         <Alert
           color="danger"
@@ -228,6 +265,7 @@ const UserDetails = ({ user, refetch, loadingUser }) => {
           {errors.save}
         </Alert>
       )}
+
       <Row lg="2" md="4" sm="12" className="d-flex pr-0 px-3 h-100">
         <Col lg="2" md="2" sm="12" className="d-flex pr-0 pl-0 ml-auto ">
           <Button
@@ -251,6 +289,7 @@ UserDetails.propTypes = {
     id: PT.string,
     name: PT.string,
     telephone: PT.string,
+    Image: { url: PT.string },
   }),
   refetch: PT.func,
   loadingUser: PT.bool,
