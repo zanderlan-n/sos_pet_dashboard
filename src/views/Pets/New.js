@@ -1,7 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useHistory } from 'react-router-dom';
 import { useMutation, useQuery } from '@apollo/react-hooks';
-import { Card, CardBody, CardHeader, Col, Row, Label, Spinner, Button, Input, FormFeedback } from 'reactstrap';
+import {
+  Card,
+  CardBody,
+  CardHeader,
+  Col,
+  Row,
+  Label,
+  Spinner,
+  Button,
+  Input,
+  FormFeedback,
+} from 'reactstrap';
 
 import gql from 'graphql-tag';
 
@@ -11,6 +22,7 @@ import useSession from '../../hooks/useSession';
 
 import { Select } from 'antd';
 
+import { PET_STATUS } from '../../config/constants';
 import loadingView from '../../components/Loading';
 import DateField from '../../components/DateField';
 
@@ -21,8 +33,6 @@ import './Pets.scss';
 import * as yup from 'yup';
 import swal from 'sweetalert';
 import * as moment from 'moment';
-
-
 
 const FETCH_ANIMAL = gql`
   query animal($id: ID!) {
@@ -67,14 +77,14 @@ const CREATE_ANIMAL = gql`
           last_seen: $last_seen
           description: $description
           user: $userId
-          image: [ $imageId ]
+          image: [$imageId]
         }
       }
     ) {
       animal {
-        id,
+        id
         user {
-          id,
+          id
           name
         }
       }
@@ -105,7 +115,7 @@ const UPDATE_ANIMAL = gql`
           location: $location
           last_seen: $last_seen
           description: $description
-          image: [ $imageId ]
+          image: [$imageId]
         }
       }
     ) {
@@ -117,14 +127,8 @@ const UPDATE_ANIMAL = gql`
 `;
 
 const DELETE_ANIMAL = gql`
-  mutation deleteAnimal(
-    $id: ID!
-  ) {
-    deleteAnimal(
-      input: {
-        where: { id: $id }
-      }
-    ) {
+  mutation deleteAnimal($id: ID!) {
+    deleteAnimal(input: { where: { id: $id } }) {
       animal {
         id
       }
@@ -158,7 +162,6 @@ const validationSchema = yup.object().shape({
     .string('A idade deve ser string')
     .max(3, 'A localização deve ter no máximo 3 caracteres')
     .required('A idade é obrigatória'),
-
 });
 
 let isLoading = false;
@@ -174,7 +177,7 @@ const Pet = () => {
 
   const history = useHistory();
 
-  const [ errors, setErrors ] = useState({});
+  const [errors, setErrors] = useState({});
 
   const [animalObject, setAnimalObject] = useState({
     id: null,
@@ -191,12 +194,12 @@ const Pet = () => {
   const { data, loading, error } = useQuery(FETCH_ANIMAL, {
     skip: !id,
     variables: { id: id },
-    fetchPolicy: "network-only",
+    fetchPolicy: 'network-only',
   });
 
-  const [ create ] = useMutation(CREATE_ANIMAL);
-  const [ update ] = useMutation(UPDATE_ANIMAL);
-  const [ remove ] = useMutation(DELETE_ANIMAL);
+  const [create] = useMutation(CREATE_ANIMAL);
+  const [update] = useMutation(UPDATE_ANIMAL);
+  const [remove] = useMutation(DELETE_ANIMAL);
 
   useEffect(() => {
     if (data) {
@@ -206,7 +209,12 @@ const Pet = () => {
       animal.imageUrl = animal.image.url;
       animal.last_seen = new Date(animal.last_seen);
 
-      if (animal && animal.image && animal.image.length && animal.image.length > 0) {
+      if (
+        animal &&
+        animal.image &&
+        animal.image.length &&
+        animal.image.length > 0
+      ) {
         animal.imageId = animal.image[0].id;
         animal.imageUrl = animal.image[0].url;
       }
@@ -247,7 +255,7 @@ const Pet = () => {
   const handleOnChange = (key, value) => {
     setAnimalObject({
       ...animalObject,
-      [key]: value
+      [key]: value,
     });
   };
 
@@ -267,7 +275,7 @@ const Pet = () => {
     deleteAnimal();
   };
 
-  const createAnimal = async() => {
+  const createAnimal = async () => {
     isLoading = true;
 
     try {
@@ -286,8 +294,8 @@ const Pet = () => {
       });
 
       isLoading = false;
-      toast("Pet cadastrado com sucesso!");
-      history.push("/my_pets");
+      toast('Pet cadastrado com sucesso!');
+      history.push('/my_pets');
     } catch (err) {
       isLoading = false;
 
@@ -303,7 +311,7 @@ const Pet = () => {
     }
   };
 
-  const updateAnimal = async() => {
+  const updateAnimal = async () => {
     isLoading = true;
 
     try {
@@ -317,13 +325,13 @@ const Pet = () => {
           location: animalObject.location,
           age: parseFloat(animalObject.age),
           description: animalObject.description,
-          last_seen: moment(animalObject.last_seen).format("YYYY-MM-DD"),
+          last_seen: moment(animalObject.last_seen).format('YYYY-MM-DD'),
         },
       });
 
       isLoading = false;
-      toast("Pet atualizado com sucesso!");
-      history.push("/my_pets");
+      toast('Pet atualizado com sucesso!');
+      history.push('/my_pets');
     } catch (err) {
       isLoading = false;
 
@@ -343,33 +351,34 @@ const Pet = () => {
 
   const deleteAnimal = () => {
     swal({
-      title: "Deseja excluir este pet?",
-      text: "A exclusão não pode ser desfeita",
-      icon: "warning",
+      title: 'Deseja excluir este pet?',
+      text: 'A exclusão não pode ser desfeita',
+      icon: 'warning',
       buttons: {
-        cancel: "Não",
-        confirm: "Sim"
+        cancel: 'Não',
+        confirm: 'Sim',
       },
       dangerMode: true,
-
     }).then(async (willDelete) => {
-      if (!willDelete) { return; }
+      if (!willDelete) {
+        return;
+      }
 
       isDeleteLoading = true;
 
       try {
         const { data } = await remove({
           variables: {
-            id: animalObject.id
+            id: animalObject.id,
           },
         });
 
         isDeleteLoading = false;
-        toast("Pet excluído com sucesso!");
-        history.push("/my_pets");
+        toast('Pet excluído com sucesso!');
+        history.push('/my_pets');
       } catch (err) {
         isDeleteLoading = false;
-        toast("Ocorreu uma falha ao realizar a exclusão");
+        toast('Ocorreu uma falha ao realizar a exclusão');
       }
     });
   };
@@ -377,12 +386,12 @@ const Pet = () => {
   const onImageSuccess = (e) => {
     setAnimalObject({
       ...animalObject,
-      imageId: e.id
+      imageId: e.id,
     });
   };
 
   const onImageFailure = (e) => {
-    toast("Não foi possível salvar a imagem");
+    toast('Não foi possível salvar a imagem');
   };
 
   if (loading) {
@@ -392,63 +401,154 @@ const Pet = () => {
   if (error) {
     toast('Não foi possível buscar as informações do pet');
   }
-
   return (
     <div className="animated fadeIn">
       <Row>
         <Col lg={12}>
           <Card>
             <CardHeader className="font-weight-bold">
-              { id ? "Editar pet" : "Novo pet" }
+              {id ? 'Editar pet' : 'Novo pet'}
             </CardHeader>
             <CardBody>
               <Row className="d-flex flex-column flex-sm-row px-3 px-sm-4">
                 <div className="col-12 col-sm-4 px-0 pr-sm-3">
                   <FileUploadButton
+                    defaultImageType={'PET'}
                     url={animalObject.imageUrl}
                     onSuccess={onImageSuccess}
                     onFailure={onImageFailure}
-                    size={"100%"}
-                    isPetImage={true}
+                    size={'100%'}
                   />
                 </div>
                 <div className="col-12 col-sm-8 px-0 pt-3 pt-sm-0 pl-sm-3 d-flex flex-column space-between">
+                  <div className={'form-group'}>
+                    <Label>Situação</Label>
+                    <Select
+                      id={'status'}
+                      value={animalObject.status}
+                      onChange={(e) => handleOnChange('status', e)}
+                      className={'form-control'}
+                      options={[
+                        { label: 'Perdido', value: 'lost' },
+                        { label: 'Encontrado', value: 'found' },
+                        { label: 'Para adoção', value: 'forAdoption' },
+                        { label: 'Adotado', value: 'adopted' },
+                      ]}
+                    />
+                    <FormFeedback>{errors?.status}</FormFeedback>
+                  </div>
                   <div className="form-group">
                     <Label>Cor</Label>
-                    <Input id={"color"} value={animalObject.color} onChange={(e) => handleOnChange("color", e.target.value)} spellCheck={false} invalid={!!errors?.color} className="form-control" type="text"></Input>
+                    <Input
+                      id={'color'}
+                      value={animalObject.color}
+                      onChange={(e) => handleOnChange('color', e.target.value)}
+                      spellCheck={false}
+                      invalid={!!errors?.color}
+                      className="form-control"
+                      type="text"
+                    ></Input>
                     <FormFeedback>{errors?.color}</FormFeedback>
                   </div>
-                  <div className="form-group">
-                    <DateField id={"last_seen"} value={animalObject.last_seen} onChange={(e) => handleOnChange("last_seen", e)} label={"Última vez visto"} invalid={!!errors?.last_seen} error={errors?.last_seen} className="form-control" type="text"></DateField>
-                  </div>
+                  {animalObject.status === PET_STATUS.LOST && (
+                    <div className="form-group">
+                      <DateField
+                        id={'last_seen'}
+                        value={animalObject.last_seen}
+                        onChange={(e) => handleOnChange('last_seen', e)}
+                        label={'Última vez visto'}
+                        invalid={!!errors?.last_seen}
+                        error={errors?.last_seen}
+                        className="form-control"
+                        type="text"
+                      />
+                    </div>
+                  )}
                   <div className="form-group">
                     <Label>Descrição</Label>
-                    <Input id={"description"} value={animalObject.description} onChange={(e) => handleOnChange("description", e.target.value)} spellCheck={false} invalid={!!errors?.description} className="form-control" type="text"></Input>
+                    <Input
+                      id={'description'}
+                      value={animalObject.description}
+                      onChange={(e) =>
+                        handleOnChange('description', e.target.value)
+                      }
+                      spellCheck={false}
+                      invalid={!!errors?.description}
+                      className="form-control"
+                      type="text"
+                    ></Input>
                     <FormFeedback>{errors?.description}</FormFeedback>
                   </div>
-                  <div className={"form-group"}>
+                  <div className={'form-group'}>
                     <Label>Tamanho</Label>
-                    <Select id={"size"} value={animalObject.size} onChange={(e) => handleOnChange("size", e)} className={"form-control"} options={[{ label: 'Pequeno', value: 'small' }, { label: 'Médio', value: 'medium' }, { label: 'Grande', value: 'big' }]}></Select>
+                    <Select
+                      id={'size'}
+                      value={animalObject.size}
+                      onChange={(e) => handleOnChange('size', e)}
+                      className={'form-control'}
+                      options={[
+                        { label: 'Pequeno', value: 'small' },
+                        { label: 'Médio', value: 'medium' },
+                        { label: 'Grande', value: 'big' },
+                      ]}
+                    ></Select>
                     <FormFeedback>{errors?.size}</FormFeedback>
                   </div>
                   <div className="form-group">
                     <Label>Localização</Label>
-                    <Input id={"location"} value={animalObject.location} onChange={(e) => handleOnChange("location", e.target.value)} spellCheck={false} invalid={!!errors?.location} className="form-control" type="text"></Input>
+                    <Input
+                      id={'location'}
+                      value={animalObject.location}
+                      onChange={(e) =>
+                        handleOnChange('location', e.target.value)
+                      }
+                      spellCheck={false}
+                      invalid={!!errors?.location}
+                      className="form-control"
+                      type="text"
+                    ></Input>
                     <FormFeedback>{errors?.location}</FormFeedback>
-                  </div>
-                  <div className={"form-group"}>
-                    <Label>Situação</Label>
-                    <Select id={"status"} value={animalObject.status} onChange={(e) => handleOnChange("status", e)} className={"form-control"} className={"form-control"} options={[{ label: 'Perdido', value: 'lost' }, { label: 'Encontrado', value: 'found' }, { label: 'Para adoção', value: 'forAdoption' }, { label: 'Adotado', value: 'adopted' }]}></Select>
-                    <FormFeedback>{errors?.status}</FormFeedback>
                   </div>
                   <div className="form-group">
                     <label>Idade</label>
-                    <Input id={"age"} value={animalObject.age} onChange={(e) => handleOnChange("age", e.target.value)} spellCheck={false} invalid={!!errors?.age} className="form-control" type="text"></Input>
-                    <FormFeedback>{errors?.age}</FormFeedback>
+                    <Input
+                      id="age"
+                      value={animalObject.age}
+                      onChange={(e) => handleOnChange('age', e.target.value)}
+                      spellCheck={false}
+                      className="form-control"
+                      type="text"
+                    />
                   </div>
-                  <Col lg="3" md="4" sm="12" className="d-flex pr-0 pl-0 ml-auto">
-                    { id  ? <Button onClick={handleOnDelete} style={{ marginRight: "10px" }} className="ml-auto font-weight-bold text-white mt-md-5 mt-2 w-100" color="danger" type="button" disabled={isDeleteLoading}>{isDeleteLoading ? <Spinner size="sm" /> : 'Excluir'}</Button> : '' }
-                    <Button onClick={handleOnSubmit} className="ml-auto font-weight-bold text-white mt-md-5 mt-2 w-100" color="primary" type="submit" disabled={isLoading}>{isLoading ? <Spinner size="sm" /> : 'Salvar'}</Button>
+                  <Col
+                    lg="3"
+                    md="4"
+                    sm="12"
+                    className="d-flex pr-0 pl-0 ml-auto"
+                  >
+                    {id ? (
+                      <Button
+                        onClick={handleOnDelete}
+                        style={{ marginRight: '10px' }}
+                        className="ml-auto font-weight-bold text-white mt-md-5 mt-2 w-100"
+                        color="danger"
+                        type="button"
+                        disabled={isDeleteLoading}
+                      >
+                        {isDeleteLoading ? <Spinner size="sm" /> : 'Excluir'}
+                      </Button>
+                    ) : (
+                      ''
+                    )}
+                    <Button
+                      onClick={handleOnSubmit}
+                      className="ml-auto font-weight-bold text-white mt-md-5 mt-2 w-100"
+                      color="primary"
+                      type="submit"
+                      disabled={isLoading}
+                    >
+                      {isLoading ? <Spinner size="sm" /> : 'Salvar'}
+                    </Button>
                   </Col>
                 </div>
               </Row>

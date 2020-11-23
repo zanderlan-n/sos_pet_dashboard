@@ -174,10 +174,11 @@ const UserDetails = ({ user, refetch, loadingUser }) => {
     <>
       <div className="d-flex">
         <FileUploadButton
+          defaultImageType={'USER'}
           onSuccess={onSuccess}
           onFailure={onFailure}
           url={user.Image?.url}
-          size={"20em"}
+          size={'20em'}
         />
         <div className="w-100 ml-3">
           <FormGroup>

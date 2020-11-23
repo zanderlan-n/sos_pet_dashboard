@@ -3,13 +3,18 @@ import PT from 'prop-types';
 import { Button, Spinner } from 'reactstrap';
 import axios from 'axios';
 import authManager from '../services/auth';
-import defaultUserImage from '../assets/img/icon-user.svg';
-import * as defaultPetImage from '../assets/img/icon-pet.png';
+import { DEFAULT_IMAGES, getImgUrl } from './ImagesBuilder';
+import { API_BASE_URL } from '../endpoints';
 
-const FileUploadButton = ({ url, onSuccess, onFailure, size, isPetImage }) => {
+const FileUploadButton = ({
+  url,
+  onSuccess,
+  onFailure,
+  size,
+  defaultImageType,
+  submitForm,
+}) => {
   const [loading, setLoading] = useState(false);
-  const API_BASE_URL =
-    process.env.REACT_APP_API_BASE_URL || 'http://localhost:1337';
 
   const [images, setImages] = useState([]);
   const onImageChange = (event) => {
@@ -67,24 +72,20 @@ const FileUploadButton = ({ url, onSuccess, onFailure, size, isPetImage }) => {
           <label className="cursor-pointer" htmlFor="filesId">
             <div style={{ width: `${size}` }}>
               <img
-                src={
-                  url
-                    ? process.env.REACT_APP_API_BASE_URL + url
-                    : isPetImage ? defaultPetImage : defaultUserImage
-                }
+                src={url ? getImgUrl(url) : DEFAULT_IMAGES[defaultImageType]}
                 id="output"
                 alt="user"
                 style={{
                   maxWidth: '100%',
                   width: size,
                   borderRadius: '0.8em',
-                  maxHeight: '100%',
+                  maxHeight: '343px',
                 }}
               />
             </div>
           </label>
           <Button type="submit" disabled={images.length === 0}>
-            {loading ? <Spinner size="sm" /> : 'Salvar'}
+            {loading ? <Spinner size="sm" /> : 'Salvar Imagem'}
           </Button>
         </div>
       </form>
@@ -97,6 +98,7 @@ FileUploadButton.propTypes = {
   onSuccess: PT.func.isRequired,
   onFailure: PT.func.isRequired,
   size: PT.string.isRequired,
+  defaultImageType: PT.string.isRequired,
 };
 
 export default FileUploadButton;

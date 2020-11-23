@@ -15,3 +15,10 @@ export const mappedPetSize = {
   medium: 'Porte Medio',
   big: 'Porte Grande',
 };
+
+export const PET_STATUS = {
+  LOST: 'lost',
+  FOUND: 'found',
+  FOR_ADOPTION: 'forAdoption',
+  ADOPTED: 'adopted',
+};

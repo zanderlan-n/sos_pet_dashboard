@@ -16,10 +16,9 @@ import { SessionContext } from '../../context/SessionContext';
 import { mappedPetStatus } from '../../config/constants';
 import loadingView from '../Loading';
 import CardsGrid from '../CardsGrid';
+import { getImgUrl } from '../ImagesBuilder';
 
 import * as defaultPetImage from '../../assets/img/icon-pet.png';
-
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:1337';
 
 const FETCH_ANIMALS = gql`
   query animals($where: JSON) {
@@ -51,7 +50,7 @@ const PetsView = ({ isMyPetsView }) => {
     { value: 'lost', label: 'Perdidos' },
     { value: 'found', label: 'Encontrados' },
     { value: 'forAdoption', label: 'Para Adoção' },
-    { value: '', label: 'Adotados' },
+    { value: 'adopted', label: 'Adotados' },
   ];
   const { user } = useContext(SessionContext);
   const { data, error, loading } = useQuery(FETCH_ANIMALS, {
@@ -113,7 +112,10 @@ const PetsView = ({ isMyPetsView }) => {
         },
         id: item.id,
         action: handleClick,
-        image: item && item.image && item.image.length && item.image.length > 0 ? API_BASE_URL + item.image[0].url : defaultPetImage,
+        image:
+          item?.image?.length > 0
+            ? getImgUrl(item.image[0].url)
+            : defaultPetImage,
       };
     });
   }, [data, error, handleClick, loading]);
@@ -123,7 +125,7 @@ const PetsView = ({ isMyPetsView }) => {
   }
 
   const handleNewPet = () => {
-    history.push("/pet/new");
+    history.push('/pet/new');
   };
 
   return (
@@ -153,7 +155,17 @@ const PetsView = ({ isMyPetsView }) => {
           </DropdownMenu>
         </Dropdown>
         <Col>
-          { isMyPetsView ? <Button style={{ color: "#fff" }} onClick={handleNewPet} color={"primary"}>Cadastrar Pet</Button> : '' }
+          {isMyPetsView ? (
+            <Button
+              style={{ color: '#fff' }}
+              onClick={handleNewPet}
+              color={'primary'}
+            >
+              Cadastrar Pet
+            </Button>
+          ) : (
+            ''
+          )}
         </Col>
       </Col>
       <CardsGrid data={animals} />

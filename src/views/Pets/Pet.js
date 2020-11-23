@@ -9,6 +9,7 @@ import Image from '../../components/Image';
 import loadingView from '../../components/Loading';
 import { mappedPetStatus, mappedPetSize } from '../../config/constants';
 import './Pets.scss';
+import { checkImage, getImgUrl } from '../../components/ImagesBuilder';
 
 const FETCH_ANIMAL = gql`
   query animal($id: ID!) {
@@ -20,6 +21,12 @@ const FETCH_ANIMAL = gql`
       location
       status
       age
+      image {
+        url
+      }
+      user {
+        telephone
+      }
     }
   }
 `;
@@ -32,13 +39,13 @@ const Pet = () => {
   });
 
   const pet = useMemo(() => {
-    if (!data || loading || error) {
-      return {};
+    if (!data?.animal || loading || error) {
+      return null;
     }
     const { animal } = data;
     delete animal.__typename;
     const displayedData = Object.keys(animal).map((key) => {
-      if (!animal[key]) {
+      if (!animal[key] || key === 'image') {
         return null;
       }
       let icon;
@@ -67,6 +74,10 @@ const Pet = () => {
           icon = 'arrows-h';
           item = mappedPetSize[animal[key]];
           break;
+        case 'user':
+          icon = 'phone';
+          item = animal[key].telephone;
+          break;
         default:
           icon = 'paw';
       }
@@ -77,7 +88,7 @@ const Pet = () => {
         </div>
       );
     });
-
+    animal.image = animal.image.length > 0 ? animal.image[0].url : null;
     return { data: animal, displayedData };
   }, [data, error, loading]);
 
@@ -88,8 +99,6 @@ const Pet = () => {
     toast('Não foi possivel buscar as informações do pet');
   }
 
-  const image =
-    'http://data.biovet.com.br/file/2018/10/29/H104520-F00000-V006-2000x0.jpeg';
   return (
     <div className="animated fadeIn">
       <Row>
@@ -99,14 +108,23 @@ const Pet = () => {
               {!_.isEmpty(pet) ? mappedPetStatus[pet.data.status] : Pet}
             </CardHeader>
             <CardBody>
-              <Row className="d-flex flex-column flex-sm-row px-3 px-sm-4">
-                <div className="col-12 col-sm-4 px-0 pr-sm-3">
-                  <Image className="card-img" image={image} />
-                </div>
-                <div className="col-12 col-sm-8 px-0 pt-3 pt-sm-0 pl-sm-3 d-flex flex-column space-between">
-                  {pet.displayedData.map((item) => item)}
-                </div>
-              </Row>
+              {pet && (
+                <Row className="d-flex flex-column flex-sm-row px-3 px-sm-4">
+                  <div className="col-12 col-sm-4 px-0 pr-sm-3">
+                    <Image
+                      className="card-img"
+                      image={
+                        pet.data?.image
+                          ? getImgUrl(pet.data.image)
+                          : checkImage({ url: pet.data?.image, type: 'PET' })
+                      }
+                    />
+                  </div>
+                  <div className="col-12 col-sm-8 px-0 pt-3 pt-sm-0 pl-sm-3 d-flex flex-column space-between">
+                    {pet.displayedData.map((item) => item)}
+                  </div>
+                </Row>
+              )}
             </CardBody>
           </Card>
         </Col>

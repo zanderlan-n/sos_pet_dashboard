@@ -32,7 +32,6 @@ const DefaultLayout = ({ history, ...props }) => {
     authManager.clear();
     history.push('/login');
   };
-  console.log('authManager.get()', authManager.get());
   if (!authManager.get()) {
     toast('Sua sessão expirou! Faça o login novamente.');
     return <Redirect strict push to="/login" />;
