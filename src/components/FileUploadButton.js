@@ -4,11 +4,12 @@ import { Button, Spinner } from 'reactstrap';
 import axios from 'axios';
 import authManager from '../services/auth';
 import defaultUserImage from '../assets/img/icon-user.svg';
+import * as defaultPetImage from '../assets/img/icon-pet.png';
 
-const FileUploadButton = ({ url, onSuccess, onFailure, size }) => {
+const FileUploadButton = ({ url, onSuccess, onFailure, size, isPetImage }) => {
   const [loading, setLoading] = useState(false);
   const API_BASE_URL =
-    process.env.REACT_APP_API_BASE_URL || 'http://localhost:9999';
+    process.env.REACT_APP_API_BASE_URL || 'http://localhost:1337';
 
   const [images, setImages] = useState([]);
   const onImageChange = (event) => {
@@ -64,18 +65,18 @@ const FileUploadButton = ({ url, onSuccess, onFailure, size }) => {
             style={{ display: 'none' }}
           />
           <label className="cursor-pointer" htmlFor="filesId">
-            <div style={{ width: `${size}em` }}>
+            <div style={{ width: `${size}` }}>
               <img
                 src={
                   url
                     ? process.env.REACT_APP_API_BASE_URL + url
-                    : defaultUserImage
+                    : isPetImage ? defaultPetImage : defaultUserImage
                 }
                 id="output"
                 alt="user"
                 style={{
                   maxWidth: '100%',
-
+                  width: size,
                   borderRadius: '0.8em',
                   maxHeight: '100%',
                 }}

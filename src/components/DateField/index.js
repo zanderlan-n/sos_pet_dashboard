@@ -3,22 +3,23 @@ import DatePicker, { registerLocale, setDefaultLocale } from 'react-datepicker';
 import pt from 'date-fns/locale/pt';
 import PT from 'prop-types';
 import 'react-datepicker/dist/react-datepicker.css';
-import { Input, FormGroup, Label } from 'reactstrap';
+import { Input, FormGroup, Label, FormFeedback } from 'reactstrap';
 import './styles.scss';
 
 registerLocale('pt', pt);
 setDefaultLocale('pt');
 
-const CustomInput = ({ value, onClick, disabled }) => (
+const CustomInput = ({ value, onClick, disabled, label, id, invalid, error }) => (
   <FormGroup>
-    <Label className="font-weight-bold" htmlFor="date">
-      Data
+    <Label htmlFor="date">
+      { label ? label : 'Data'}
     </Label>
-    <Input value={value} onClick={onClick} readOnly={disabled} />
+    <Input invalid={invalid} id={id} value={value} onClick={onClick} readOnly={disabled} />
+    <FormFeedback>{error}</FormFeedback>
   </FormGroup>
 );
 
-const DateField = ({ value, onChange, disabled, ...props }) => {
+const DateField = ({ value, onChange, disabled, label, id, invalid, error, ...props }) => {
   const handleChange = useCallback(
     (date) => {
       if (onChange) {
@@ -33,9 +34,9 @@ const DateField = ({ value, onChange, disabled, ...props }) => {
       <DatePicker
         className="w-100"
         style={{ width: '100%' }}
-        customInput={<CustomInput value={value} disabled={disabled} />}
+        customInput={<CustomInput error={error} id={id} label={label} value={value} disabled={disabled} invalid={invalid} />}
         selected={value ? new Date(value) : undefined}
-        showTimeSelect
+        showTimeSelect={false}
         showPopperArrow={false}
         inputProps={{
           readOnly: true,
@@ -43,7 +44,7 @@ const DateField = ({ value, onChange, disabled, ...props }) => {
         timeFormat="HH:mm"
         timeIntervals={15}
         disabled={disabled}
-        dateFormat="d 'de' MMMM 'de' yyyy 'às' h:mm aa"
+        dateFormat="d 'de' MMMM 'de' yyyy"
         onChange={handleChange}
         {...props}
       />
