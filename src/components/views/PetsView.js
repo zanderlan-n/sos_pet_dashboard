@@ -1,5 +1,12 @@
-import React, { useState, useMemo, useCallback, useContext } from 'react';
+import React, {
+  useState,
+  useMemo,
+  useCallback,
+  useContext,
+  useRef,
+} from 'react';
 
+import _ from 'lodash';
 import gql from 'graphql-tag';
 import { useQuery } from '@apollo/react-hooks';
 import {
@@ -9,6 +16,8 @@ import {
   DropdownMenu,
   Col,
   Button,
+  Input,
+  Label,
 } from 'reactstrap';
 import { useHistory } from 'react-router-dom';
 import PT from 'prop-types';
@@ -17,6 +26,7 @@ import { mappedPetStatus } from '../../config/constants';
 import loadingView from '../Loading';
 import CardsGrid from '../CardsGrid';
 import { getImgUrl } from '../ImagesBuilder';
+import useToast from '../../hooks/useToast';
 
 import * as defaultPetImage from '../../assets/img/icon-pet.png';
 
@@ -42,8 +52,11 @@ const FETCH_ANIMALS = gql`
 `;
 
 const PetsView = ({ isMyPetsView }) => {
+  const toast = useToast();
   const history = useHistory();
   const [actionFilter, setActionFilter] = useState(0);
+  const [locationFilter, setLocationFilter] = useState(null);
+  const [dateFilter, setDateFilter] = useState(null);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const actionFilterOptions = [
     { value: null, label: 'Todos' },
@@ -52,6 +65,12 @@ const PetsView = ({ isMyPetsView }) => {
     { value: 'forAdoption', label: 'Para Adoção' },
     { value: 'adopted', label: 'Adotados' },
   ];
+  const setLocationSearch = useRef(
+    _.debounce((value) => {
+      setLocationFilter(value);
+    }, 500)
+  ).current;
+
   const { user } = useContext(SessionContext);
   const { data, error, loading } = useQuery(FETCH_ANIMALS, {
     variables: {
@@ -59,6 +78,8 @@ const PetsView = ({ isMyPetsView }) => {
         ...(isMyPetsView && {
           user: { id: user.id },
         }),
+        ...(locationFilter && { location_contains: locationFilter }),
+        ...(dateFilter && { last_seen_gt: dateFilter }),
         ...(actionFilter && {
           status: actionFilterOptions[actionFilter].value,
         }),
@@ -92,7 +113,14 @@ const PetsView = ({ isMyPetsView }) => {
           ),
 
           description: (
-            <div className="px-2 pt-2">
+            <div
+              style={{
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+              }}
+              className="px-2 pt-2"
+            >
               <i className="fa fa-comment-o" />
               <span className="ml-2">{item.description}</span>
             </div>
@@ -119,19 +147,17 @@ const PetsView = ({ isMyPetsView }) => {
       };
     });
   }, [data, error, handleClick, loading]);
-
-  if (loading) {
-    return loadingView();
-  }
-
   const handleNewPet = () => {
     history.push('/pet/new');
   };
-
+  if (error) {
+    toast('Não foi possivel realizar sua busca!Tente novamente mais tarde.');
+  }
   return (
     <div className="animated fadeIn">
-      <Col className="mf-auto mb-4 px-0 d-flex flex-column flex-sm-row">
+      <Col className="mf-auto mb-4 px-0 d-flex flex-column flex-sm-row ">
         <Dropdown
+          className="mr-0 mr-sm-4"
           isOpen={dropdownOpen}
           toggle={() => setDropdownOpen(!dropdownOpen)}
         >
@@ -154,21 +180,49 @@ const PetsView = ({ isMyPetsView }) => {
             ))}
           </DropdownMenu>
         </Dropdown>
-        <Col>
-          {isMyPetsView ? (
-            <Button
-              style={{ color: '#fff' }}
-              onClick={handleNewPet}
-              color={'primary'}
-            >
-              Cadastrar Pet
-            </Button>
-          ) : (
-            ''
-          )}
+        <div className="px-0 d-flex flex-row ">
+          <Label className="mr-2 mb-0 font-weight-bold align-self-center">
+            Última vez visto:
+          </Label>
+
+          <Col style={{ flex: 0 }} className="px-0 mr-0 mr-sm-4">
+            <Input
+              className="w-100 w-sm-25"
+              type="date"
+              value={dateFilter}
+              onChange={(e) => {
+                setDateFilter(e.target.value);
+              }}
+            />
+          </Col>
+        </div>
+
+        <Col className="px-0 d-flex flex-row ">
+          <Label className="mr-2 mb-0 font-weight-bold align-self-center">
+            Bairro/Setor:
+          </Label>
+
+          <Col md={3} className="px-0 mr-0 mr-sm-4">
+            <Input
+              type="text"
+              value={locationFilter}
+              onChange={(e) => {
+                setLocationSearch(e.target.value);
+              }}
+            />
+          </Col>
         </Col>
+        {isMyPetsView && (
+          <Button
+            style={{ color: '#fff' }}
+            onClick={handleNewPet}
+            color="primary"
+          >
+            Cadastrar Pet
+          </Button>
+        )}
       </Col>
-      <CardsGrid data={animals} />
+      {loading ? loadingView() : <CardsGrid data={animals} />}
     </div>
   );
 };

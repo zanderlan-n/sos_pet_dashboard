@@ -17,11 +17,17 @@ const CardsGrid = ({ data }) => {
                 item.action(item.id);
               }}
             >
-              <div style={{ maxHeight: '200px', height: '200px' }}>
+              <div
+                style={{
+                  maxHeight: '200px',
+                  height: '200px',
+                  maxWidth: '100%',
+                }}
+              >
                 <Image className="card-imgs" image={item.image} />
               </div>
 
-              <div className="pb-2">
+              <div className="pb-2 w-50">
                 {Object.keys(item.data).map((key) => {
                   return item.data[key];
                 })}

@@ -172,7 +172,7 @@ const UserDetails = ({ user, refetch, loadingUser }) => {
 
   return (
     <>
-      <div className="d-flex">
+      <div className="d-flex flex-column flex-sm-row">
         <FileUploadButton
           defaultImageType={'USER'}
           onSuccess={onSuccess}

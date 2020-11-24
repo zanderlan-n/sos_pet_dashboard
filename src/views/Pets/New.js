@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+
 import { useParams, useHistory } from 'react-router-dom';
 import { useMutation, useQuery } from '@apollo/react-hooks';
 import {
@@ -13,26 +14,19 @@ import {
   Input,
   FormFeedback,
 } from 'reactstrap';
-
 import gql from 'graphql-tag';
-
-import useToast from '../../hooks/useToast';
-
-import useSession from '../../hooks/useSession';
-
-import { Select } from 'antd';
-
-import { PET_STATUS } from '../../config/constants';
-import loadingView from '../../components/Loading';
-import DateField from '../../components/DateField';
-
-import FileUploadButton from '../../components/FileUploadButton';
-
-import './Pets.scss';
-
 import * as yup from 'yup';
 import swal from 'sweetalert';
 import * as moment from 'moment';
+import { Select } from 'antd';
+
+import useToast from '../../hooks/useToast';
+import useSession from '../../hooks/useSession';
+import { PET_STATUS } from '../../config/constants';
+import loadingView from '../../components/Loading';
+import DateField from '../../components/DateField';
+import FileUploadButton from '../../components/FileUploadButton';
+import './Pets.scss';
 
 const FETCH_ANIMAL = gql`
   query animal($id: ID!) {
@@ -447,16 +441,16 @@ const Pet = () => {
                       invalid={!!errors?.color}
                       className="form-control"
                       type="text"
-                    ></Input>
+                    />
                     <FormFeedback>{errors?.color}</FormFeedback>
                   </div>
                   {animalObject.status === PET_STATUS.LOST && (
                     <div className="form-group">
                       <DateField
-                        id={'last_seen'}
+                        id="last_seen"
                         value={animalObject.last_seen}
                         onChange={(e) => handleOnChange('last_seen', e)}
-                        label={'Última vez visto'}
+                        label="Última vez visto"
                         invalid={!!errors?.last_seen}
                         error={errors?.last_seen}
                         className="form-control"
@@ -467,6 +461,8 @@ const Pet = () => {
                   <div className="form-group">
                     <Label>Descrição</Label>
                     <Input
+                      type="textarea"
+                      row={2}
                       id={'description'}
                       value={animalObject.description}
                       onChange={(e) =>
@@ -475,29 +471,28 @@ const Pet = () => {
                       spellCheck={false}
                       invalid={!!errors?.description}
                       className="form-control"
-                      type="text"
-                    ></Input>
+                    />
                     <FormFeedback>{errors?.description}</FormFeedback>
                   </div>
                   <div className={'form-group'}>
                     <Label>Tamanho</Label>
                     <Select
-                      id={'size'}
+                      id="size"
                       value={animalObject.size}
                       onChange={(e) => handleOnChange('size', e)}
-                      className={'form-control'}
+                      className="form-control"
                       options={[
                         { label: 'Pequeno', value: 'small' },
                         { label: 'Médio', value: 'medium' },
                         { label: 'Grande', value: 'big' },
                       ]}
-                    ></Select>
+                    />
                     <FormFeedback>{errors?.size}</FormFeedback>
                   </div>
                   <div className="form-group">
                     <Label>Localização</Label>
                     <Input
-                      id={'location'}
+                      id="location"
                       value={animalObject.location}
                       onChange={(e) =>
                         handleOnChange('location', e.target.value)
@@ -506,7 +501,7 @@ const Pet = () => {
                       invalid={!!errors?.location}
                       className="form-control"
                       type="text"
-                    ></Input>
+                    />
                     <FormFeedback>{errors?.location}</FormFeedback>
                   </div>
                   <div className="form-group">
