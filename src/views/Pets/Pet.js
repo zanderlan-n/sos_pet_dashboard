@@ -99,6 +99,16 @@ const Pet = () => {
     toast('Não foi possivel buscar as informações do pet');
   }
 
+  const handleWhatsapp = () => {
+    const fullUrl = encodeURIComponent(window.location.href + window.location.pathname);
+    window.open("https://wa.me/?text=Olha só! Encontrei um pet que pode ser do seu interesse! " + fullUrl, "_blank");
+  };
+
+  const handleFacebook = () => {
+    const fullUrl = encodeURIComponent(window.location.href + window.location.pathname);
+    window.open("https://www.facebook.com/sharer/sharer.php?u=" + fullUrl + "&quote=Olha só! Encontrei um pet que pode ser do seu interesse!", "_blank");
+  };
+
   return (
     <div className="animated fadeIn">
       <Row>
@@ -107,12 +117,19 @@ const Pet = () => {
             <CardHeader className="font-weight-bold">
               {!_.isEmpty(pet) ? mappedPetStatus[pet.data.status] : Pet}
             </CardHeader>
-            <CardBody>
+            <CardBody style={{ position: "relative" }}>
+              <div className="d-flex justify-content-center flex-column flex-sm-row px-3 px-sm-4">
+                <span style={{ fontSize: "22px", marginBottom: "20px", position: "absolute", right: "8px", bottom: "-15px" }}>
+                  <i onClick={handleWhatsapp} style={{ marginRight: "5px", cursor: "pointer" }} className={"fa fa-whatsapp"}></i>
+                  <i onClick={handleFacebook} style={{ marginLeft: "5px", cursor: "pointer" }} className={"fa fa-facebook"}></i>
+                </span>
+              </div>
+
               {pet && (
                 <Row className="d-flex flex-column flex-sm-row px-3 px-sm-4">
                   <div className="col-12 col-sm-4 px-0 pr-sm-3">
                     <Image
-                      className="card-img"
+                      className="card-img mt-xs-5"
                       image={
                         pet.data?.image
                           ? getImgUrl(pet.data.image)
