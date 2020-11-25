@@ -129,7 +129,7 @@ const Pet = () => {
                 <Row className="d-flex flex-column flex-sm-row px-3 px-sm-4">
                   <div className="col-12 col-sm-4 px-0 pr-sm-3">
                     <Image
-                      className="card-img mt-xs-5"
+                      className="card-img"
                       image={
                         pet.data?.image
                           ? getImgUrl(pet.data.image)
