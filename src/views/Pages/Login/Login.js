@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useParams } from 'react';
 import { useMutation } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
 import { useHistory } from 'react-router-dom';
@@ -18,11 +18,13 @@ import {
   FormFeedback,
   Alert,
 } from 'reactstrap';
-
+import { socialLogin } from '../../../services/http';
 import { SessionContext } from '../../../context/SessionContext';
 import authManager from '../../../services/auth';
 import useToast from '../../../hooks/useToast';
 import { validateEmail } from '../../../utils/validations';
+import { API_BASE_URL } from '../../../endpoints';
+import SocialLink from '../../../components/SocialLink';
 
 import './Login.scss';
 import logo from '../../../assets/img/pet_logo1.svg';
@@ -35,20 +37,50 @@ const LOGIN = gql`
   }
 `;
 
-const Login = () => {
+const Login = (props) => {
   const history = useHistory();
   const { startSession } = useContext(SessionContext);
   const toast = useToast();
-
+  const {
+    match: {
+      params: { provider },
+    },
+    location: { search },
+  } = props;
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errors, setErrors] = useState({ email: '', password: '', auth: '' });
 
   const [login] = useMutation(LOGIN);
 
+  const handleSuccess = (data) => {
+    const { jwt: token } = data;
+    authManager.set(token);
+    const decoded = jwt.decode(token);
+    startSession(decoded);
+    toast('Login efetuado com sucesso');
+    const urlCallback = localStorage.getItem('url-callback');
+    if (urlCallback) {
+      localStorage.removeItem('url-callback');
+      history.push(urlCallback);
+    } else {
+      history.push('/');
+    }
+  };
+  const handleError = (isSocialLogin) => {
+    if (isSocialLogin) {
+      history.push('/login');
+    }
+    setErrors({ ...errors, auth: 'Ocorreu uma falha na sua autenticação' });
+  };
+
   useEffect(() => {
     if (authManager.get()) {
       history.push('/');
+    }
+    if (provider && search) {
+      const requestURL = `${API_BASE_URL}/auth/${provider}/callback${search}`;
+      socialLogin(requestURL, handleSuccess, handleError);
     }
   }, [history]);
   const handleRegister = async (e) => {
@@ -64,14 +96,9 @@ const Login = () => {
         variables: { identifier: email, password },
       });
 
-      const { jwt: token } = data.login;
-      authManager.set(token);
-      const decoded = jwt.decode(token);
-      startSession(decoded);
-
-      handleSuccess();
+      handleSuccess(data.login);
     } catch {
-      setErrors({ ...errors, auth: 'Ocorreu uma falha na sua autenticação' });
+      handleError(false);
     }
   };
 
@@ -116,21 +143,10 @@ const Login = () => {
     }
   };
 
-  const handleSuccess = () => {
-    toast('Login efetuado com sucesso');
-
-    const urlCallback = localStorage.getItem("url-callback");
-    if (urlCallback) {
-      localStorage.removeItem("url-callback");
-      history.push(urlCallback);
-    } else {
-      history.push('/');
-    }
-  };
   const handleForgotPassword = () => {
     history.push('/forget-password');
   };
-
+  const providers = ['facebook'];
   return (
     <div className="app flex-row align-items-center background">
       <Container>
@@ -201,14 +217,21 @@ const Login = () => {
                     >
                       Login
                     </Button>
-                    <Button
-                      onClick={handleRegister}
-                      color="info"
-                      className="px-4 w-100 mt-2  text-white font-weight-bold text-uppercase"
-                      type="submit"
-                    >
-                      Cadastre-se
-                    </Button>
+                    <div className="d-flex mt-2 ">
+                      <Button
+                        onClick={handleRegister}
+                        color="info"
+                        className="px-4 w-50 mr-2 text-white font-weight-bold text-uppercase"
+                        type="submit"
+                      >
+                        Cadastre-se
+                      </Button>
+                      <SocialLink
+                        className="px-4 w-50"
+                        provider="facebook"
+                        key="facebook"
+                      />
+                    </div>
                     {errors.auth && (
                       <Alert color="danger" className="mt-2">
                         {errors.auth}

@@ -54,6 +54,12 @@ const App = () => {
                 path="/login"
                 name="Login Page"
                 render={(props) => <Login {...props} />}
+              />{' '}
+              <Route
+                exact
+                path="/login/:provider"
+                name="Social Login Page"
+                render={(props) => <Login {...props} />}
               />
               <Route
                 exact

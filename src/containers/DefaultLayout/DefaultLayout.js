@@ -38,14 +38,13 @@ const DefaultLayout = ({ history, ...props }) => {
     let hashSplitted = '';
 
     if (hash) {
-      hashSplitted = hash.split("#");
+      hashSplitted = hash.split('#');
     }
 
     if (hashSplitted && hashSplitted.length > 1) {
       const urlCallback = hashSplitted[1];
-      localStorage.setItem("url-callback", urlCallback);
+      localStorage.setItem('url-callback', urlCallback);
     }
-
     toast('Sua sessão expirou! Faça o login novamente.');
     return <Redirect strict push to="/login" />;
   }

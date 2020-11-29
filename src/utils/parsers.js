@@ -22,4 +22,9 @@ export const MinutesToHours = (totalMinutes, format = 'short') => {
 
 export const getOnlyNumbers = (value) => {
   return value ? value.replace(/[^\d]/g, '') : '';
-}
+};
+
+export const capitalizeFirstLetter = (s) => {
+  if (typeof s !== 'string') return '';
+  return s.charAt(0).toUpperCase() + s.slice(1);
+};
