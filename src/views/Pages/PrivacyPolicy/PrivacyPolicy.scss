@@ -1,0 +1,26 @@
+.background {
+  background-image: url('./../../../assets/img/background.svg');
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  height: auto;
+}
+
+.background > div {
+  display: flex;
+  flex-direction: column;
+}
+
+#background-image {
+  margin: auto;
+  padding-bottom: 25px;
+}
+
+.policyWrapper {
+  padding: 25px;
+  border-radius: 10px;
+  background-color: white;
+}
+.policyWrapper > p {
+  font-size: 20px;
+}

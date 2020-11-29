@@ -27,6 +27,7 @@ const ForgetPassword = React.lazy(() => import('./views/Pages/ForgetPassword'));
 const RecoverPassword = React.lazy(() =>
   import('./views/Pages/RecoverPassword')
 );
+const PrivacyPolicy = React.lazy(() => import('./views/Pages/PrivacyPolicy'));
 
 const axios = Axios.create({
   baseURL: 'http://localhost:3000',
@@ -60,6 +61,12 @@ const App = () => {
                 path="/login/:provider"
                 name="Social Login Page"
                 render={(props) => <Login {...props} />}
+              />
+              <Route
+                exact
+                path="/privacy-policy"
+                name="Privacy Policy Page"
+                render={(props) => <PrivacyPolicy {...props} />}
               />
               <Route
                 exact
