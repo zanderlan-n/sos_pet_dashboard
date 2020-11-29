@@ -118,7 +118,14 @@ const Login = () => {
 
   const handleSuccess = () => {
     toast('Login efetuado com sucesso');
-    history.push('/');
+
+    const urlCallback = localStorage.getItem("url-callback");
+    if (urlCallback) {
+      localStorage.removeItem("url-callback");
+      history.push(urlCallback);
+    } else {
+      history.push('/');
+    }
   };
   const handleForgotPassword = () => {
     history.push('/forget-password');
