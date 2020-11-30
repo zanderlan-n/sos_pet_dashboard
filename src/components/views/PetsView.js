@@ -79,7 +79,7 @@ const PetsView = ({ isMyPetsView }) => {
           user: { id: user.id },
         }),
         ...(locationFilter && { location_contains: locationFilter }),
-        ...(dateFilter && { last_seen_gt: dateFilter }),
+        ...(dateFilter && { last_seen_gte: dateFilter }),
         ...(actionFilter && {
           status: actionFilterOptions[actionFilter].value,
         }),
@@ -205,7 +205,6 @@ const PetsView = ({ isMyPetsView }) => {
           <Col md={3} className="px-0 mr-0 mr-sm-4">
             <Input
               type="text"
-              value={locationFilter}
               onChange={(e) => {
                 setLocationSearch(e.target.value);
               }}
