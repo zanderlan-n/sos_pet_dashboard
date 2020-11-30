@@ -14,7 +14,7 @@ const Pets = () => {
       <Row>
         <Col className="px-0 px-md-2" lg={12}>
           {isMobile ? (
-            <PetsView />
+            <PetsView isMyPetsView={isMyPetsView} />
           ) : (
             <Card>
               <CardHeader className="font-weight-bold  text-dark">

@@ -185,7 +185,7 @@ const PetsView = ({ isMyPetsView }) => {
             Última vez visto:
           </Label>
 
-          <Col style={{ flex: 0 }} className="px-0 mr-0 mr-sm-4">
+          <Col className="px-0 mr-0 mr-sm-4 w-100 w-sm-25">
             <Input
               className="w-100 w-sm-25"
               type="date"
@@ -197,7 +197,7 @@ const PetsView = ({ isMyPetsView }) => {
           </Col>
         </div>
 
-        <Col className="px-0 d-flex flex-row ">
+        <Col className="px-0 d-flex flex-row my-3 my-sm-0">
           <Label className="mr-2 mb-0 font-weight-bold align-self-center">
             Bairro/Setor:
           </Label>

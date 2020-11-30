@@ -418,10 +418,11 @@ const Pet = () => {
                   <div className={'form-group'}>
                     <Label>Situação</Label>
                     <Select
+                      style={{ padding: 0 }}
                       id={'status'}
                       value={animalObject.status}
                       onChange={(e) => handleOnChange('status', e)}
-                      className={'form-control'}
+                      className="form-control"
                       options={[
                         { label: 'Perdido', value: 'lost' },
                         { label: 'Encontrado', value: 'found' },
