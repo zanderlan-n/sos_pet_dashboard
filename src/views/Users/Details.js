@@ -65,6 +65,7 @@ const validationSchema = yup.object().shape({
 });
 
 const UserDetails = ({ user, refetch, loadingUser }) => {
+  const [imageLoading, setImageLoading] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
   const [userInput, setUserInput] = useState({});
@@ -179,6 +180,8 @@ const UserDetails = ({ user, refetch, loadingUser }) => {
           onFailure={onFailure}
           url={user.Image?.url}
           size={'20em'}
+          setLoading={setImageLoading}
+          loading={imageLoading}
         />
         <div className="w-100 ml-3">
           <FormGroup>
@@ -243,7 +246,7 @@ const UserDetails = ({ user, refetch, loadingUser }) => {
             type="submit"
             disabled={isLoading}
           >
-            {isLoading ? <Spinner size="sm" /> : 'Salvar'}
+            {isLoading || imageLoading ? <Spinner size="sm" /> : 'Salvar'}
           </Button>
         </Col>
       </Row>

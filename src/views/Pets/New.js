@@ -172,7 +172,7 @@ const Pet = () => {
   const history = useHistory();
 
   const [errors, setErrors] = useState({});
-
+  const [imageLoading, setImageLoading] = useState(false);
   const [animalObject, setAnimalObject] = useState({
     id: null,
     age: '',
@@ -412,6 +412,8 @@ const Pet = () => {
                     onSuccess={onImageSuccess}
                     onFailure={onImageFailure}
                     size={'100%'}
+                    setLoading={setImageLoading}
+                    loading={imageLoading}
                   />
                 </div>
                 <div className="col-12 col-sm-8 px-0 pt-3 pt-sm-0 pl-sm-3 d-flex flex-column space-between">
@@ -529,9 +531,13 @@ const Pet = () => {
                         className="ml-auto font-weight-bold text-white mt-md-5 mt-2 w-100"
                         color="danger"
                         type="button"
-                        disabled={isDeleteLoading}
+                        disabled={isDeleteLoading || imageLoading || isLoading}
                       >
-                        {isDeleteLoading ? <Spinner size="sm" /> : 'Excluir'}
+                        {isDeleteLoading || imageLoading || isLoading ? (
+                          <Spinner size="sm" />
+                        ) : (
+                          'Excluir'
+                        )}
                       </Button>
                     ) : (
                       ''
@@ -541,9 +547,13 @@ const Pet = () => {
                       className="ml-auto font-weight-bold text-white mt-md-5 mt-2 w-100"
                       color="primary"
                       type="submit"
-                      disabled={isLoading}
+                      disabled={isLoading || imageLoading}
                     >
-                      {isLoading ? <Spinner size="sm" /> : 'Salvar'}
+                      {isLoading || imageLoading ? (
+                        <Spinner size="sm" />
+                      ) : (
+                        'Salvar'
+                      )}
                     </Button>
                   </Col>
                 </div>
