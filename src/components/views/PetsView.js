@@ -63,7 +63,7 @@ const PetsView = ({ isMyPetsView }) => {
     { value: 'lost', label: 'Perdidos' },
     { value: 'found', label: 'Encontrados' },
     { value: 'forAdoption', label: 'Para Adoção' },
-    { value: 'adopted', label: 'Adotados' },
+    // { value: 'adopted', label: 'Adotados' },
   ];
   const setLocationSearch = useRef(
     _.debounce((value) => {

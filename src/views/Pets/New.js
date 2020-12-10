@@ -429,7 +429,7 @@ const Pet = () => {
                         { label: 'Perdido', value: 'lost' },
                         { label: 'Encontrado', value: 'found' },
                         { label: 'Para adoção', value: 'forAdoption' },
-                        { label: 'Adotado', value: 'adopted' },
+                        // { label: 'Adotado', value: 'adopted' },
                       ]}
                     />
                     <FormFeedback>{errors?.status}</FormFeedback>
