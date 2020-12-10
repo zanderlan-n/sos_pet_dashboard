@@ -481,6 +481,7 @@ const Pet = () => {
                     <Label>Tamanho</Label>
                     <Select
                       id="size"
+                      style={{ padding: 0 }}
                       value={animalObject.size}
                       onChange={(e) => handleOnChange('size', e)}
                       className="form-control"
@@ -547,6 +548,7 @@ const Pet = () => {
                       className="ml-auto font-weight-bold text-white mt-md-5 mt-2 w-100"
                       color="primary"
                       type="submit"
+                      style={{ maxHeight: '40px' }}
                       disabled={isLoading || imageLoading}
                     >
                       {isLoading || imageLoading ? (
